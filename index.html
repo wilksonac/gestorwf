@@ -193,17 +193,30 @@
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Evento</h2>
                         <form id="form-evento">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" id="evento-nome" placeholder="Nome do Evento (Ex: Casamento Joana e Pedro)" class="w-full p-2 border rounded" required>
-                                <input type="date" id="evento-data" class="w-full p-2 border rounded" required>
+                                <select id="evento-cliente" class="w-full p-2 border rounded" required>
+                                    <option value="">Selecione o Cliente</option>
+                                </select>
+                                <input type="text" id="evento-nome" placeholder="Título do Evento (Ex: Casamento Joana e Pedro)" class="w-full p-2 border rounded" required>
                             </div>
-                            <textarea id="evento-programacao" placeholder="Detalhes do Evento, Local, etc..." class="w-full p-2 border rounded mt-4" rows="3"></textarea>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <input type="date" id="evento-data" class="w-full p-2 border rounded" required>
+                                <input type="text" id="evento-local" placeholder="Local do Evento" class="w-full p-2 border rounded">
+                                <select id="evento-tipo" class="w-full p-2 border rounded" required>
+                                    <option value="">Tipo de Evento</option>
+                                    <option value="Casamento">Casamento</option>
+                                    <option value="Infantil">Infantil</option>
+                                    <option value="Corporativo">Corporativo</option>
+                                    <option value="Ensaio">Ensaio</option>
+                                    <option value="Evento Adulto">Evento Adulto</option>
+                                </select>
+                            </div>
+                            <textarea id="evento-descricao" placeholder="Descrição/Detalhes do Evento (Horários, observações, etc...)" class="w-full p-2 border rounded mt-4" rows="3"></textarea>
                             <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Adicionar Evento</button>
                         </form>
                     </div>
                     <div id="lista-eventos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         </div>
                 </div>
-
                 <div id="section-clientes" class="content-section hidden">
                      <h1 class="text-3xl font-bold text-gray-800 mb-6">Clientes</h1>
                      <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -236,6 +249,8 @@
                         </table>
                     </div>
                 </div>
+                
+                
                 <div id="section-fotos" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle de Fotos</h1>
                     
@@ -379,21 +394,13 @@
             // (Substitua este bloco de exemplo)
             //
             const firebaseConfig = {
-
-              apiKey: "AIzaSyD5ugoPst247l63pmUZBqiTG3LzbJ68LOo",
-
-              authDomain: "wilkson-gestor-contratos.firebaseapp.com",
-
-              projectId: "wilkson-gestor-contratos",
-
-              storageBucket: "wilkson-gestor-contratos.firebasestorage.app",
-
-              messagingSenderId: "391559952649",
-
-              appId: "1:391559952649:web:f01e6262927eaea675bbd8"
-
+                apiKey: "COLE_SUA_API_KEY_AQUI",
+                authDomain: "COLE_SEU_AUTH_DOMAIN_AQUI",
+                projectId: "COLE_SEU_PROJECT_ID_AQUI",
+                storageBucket: "COLE_SEU_STORAGE_BUCKET_AQUI",
+                messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID_AQUI",
+                appId: "COLE_SEU_APP_ID_AQUI"
             };
-
             //
             //
             // ##################################################################
@@ -405,19 +412,15 @@
             const db = getFirestore(app);
             
             let userId = null;
-            // ######################################################
-            // ALTERAÇÃO AQUI: "alunos" para "clientes"
-            // ######################################################
             let dbState = { 
                 eventos: [], 
-                clientes: [], // <- Alterado
+                clientes: [], 
                 fotografos: [], 
                 financeiro: [], 
                 custos: [], 
                 cenarios: [], 
                 checklist: {} 
             };
-            // ######################################################
             
             let unsubscribeListeners = [];
             let unsubscribeChecklistListeners = [];
@@ -522,22 +525,14 @@
                 if (!userId) return;
                 unsubscribeListeners.forEach(unsub => unsub());
                 unsubscribeListeners = [];
-                // ######################################################
-                // ALTERAÇÃO AQUI: "alunos" para "clientes"
-                // ######################################################
                 const collections = ['eventos', 'clientes', 'fotografos', 'financeiro', 'custos'];
-                // ######################################################
                 collections.forEach(col => {
                     const collectionPath = `users/${userId}/${col}`;
                     const unsub = onSnapshot(collection(db, collectionPath), (querySnapshot) => {
                         dbState[col] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        // ######################################################
-                        // ALTERAÇÃO AQUI: "alunos" para "clientes"
-                        // ######################################################
                         if (col === 'clientes') {
                             dbState.clientes.sort((a, b) => a.nome.localeCompare(b.nome));
                         }
-                        // ######################################################
                         if (col === 'eventos') {
                              dbState.eventos.sort((a, b) => new Date(b.data) - new Date(a.data));
                         }
@@ -553,14 +548,12 @@
                 unsubscribeChecklistListeners.forEach(unsub => unsub());
                 unsubscribeChecklistListeners = [];
 
-                // Listener para Cenários
                 const cenariosPath = `users/${userId}/eventos/${eventId}/cenarios`;
                 const unsubCenarios = onSnapshot(collection(db, cenariosPath), (snapshot) => {
                     dbState.cenarios = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderCenariosAndChecklist();
                 });
 
-                // Listener para Checklist
                 const checklistPath = `users/${userId}/eventos/${eventId}/checklist`;
                 const unsubChecklist = onSnapshot(collection(db, checklistPath), (snapshot) => {
                     dbState.checklist = {};
@@ -574,56 +567,40 @@
             }
 
             function clearAllData() {
-                // ######################################################
-                // ALTERAÇÃO AQUI: "alunos" para "clientes"
-                // ######################################################
                 dbState = { 
                     eventos: [], clientes: [], fotografos: [], financeiro: [], custos: [], 
                     cenarios: [], checklist: {} 
                 };
-                // ######################################################
                 selectedEventIdForFotos = null;
                 document.getElementById('fotos-management-area').classList.add('hidden');
             }
 
             function renderAll() {
                 renderEventos();
-                // ######################################################
-                // ALTERAÇÃO AQUI: "renderAlunos" para "renderClientes"
-                // ######################################################
                 renderClientes();
-                // ######################################################
                 renderFotografos();
                 renderFinanceiro();
                 renderCustos();
                 updateDashboard();
-                // ######################################################
-                // ALTERAÇÃO AQUI: "populateAlunoSelect" para "populateClienteSelect"
-                // ######################################################
                 populateClienteSelect();
-                // ######################################################
                 populateEventoSelect();
+                // ######################################################
+                // ALTERAÇÃO AQUI: Nova função chamada
+                // ######################################################
+                populateEventoClienteSelect(); 
+                // ######################################################
                 populateFotosEventoSelect();
                 lucide.createIcons();
             }
 
             // --- RENDERIZAÇÃO DAS SEÇÕES ---
 
-            // ######################################################
-            // FUNÇÃO "hasContract" REMOVIDA (não é mais necessária)
-            // ######################################################
-
             function updateDashboard() {
                 document.getElementById('total-eventos').innerText = dbState.eventos.length;
-                // ######################################################
-                // ALTERAÇÃO AQUI: "total-alunos" para "total-clientes"
-                // ######################################################
                 document.getElementById('total-clientes').innerText = dbState.clientes.length;
-                // ######################################################
                 
-                // Lógica de filtragem de contrato removida temporariamente
                 const clienteIds = dbState.clientes.map(a => a.id);
-                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId)); // <- Alterado de alunoId
+                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
 
                 const totalPago = financeiroFiltrado.reduce((acc, item) => acc + (parseFloat(item.pago) || 0), 0);
                 document.getElementById('total-pago').innerText = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
@@ -649,21 +626,47 @@
                     }).join('');
             }
 
+            // ######################################################
+            // ALTERAÇÃO AQUI: Função "renderEventos" atualizada
+            // ######################################################
             function renderEventos() {
                 const lista = document.getElementById('lista-eventos');
                 lista.innerHTML = dbState.eventos.map(evento => {
                     const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
-                    return `<div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-500">
-                        <h3 class="text-xl font-bold text-gray-800">${evento.nome}</h3>
+                    // Busca o nome do cliente
+                    const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
+                    const nomeCliente = cliente ? cliente.nome : "Cliente não encontrado";
+
+                    // Define a cor da borda com base no tipo de evento
+                    let borderColor = 'border-blue-500'; // Padrão
+                    switch(evento.tipo) {
+                        case 'Casamento': borderColor = 'border-pink-500'; break;
+                        case 'Infantil': borderColor = 'border-yellow-500'; break;
+                        case 'Corporativo': borderColor = 'border-indigo-500'; break;
+                        case 'Ensaio': borderColor = 'border-teal-500'; break;
+                        case 'Evento Adulto': borderColor = 'border-purple-500'; break;
+                    }
+
+                    return `<div class="bg-white p-5 rounded-lg shadow-md border-l-4 ${borderColor}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">${evento.nome}</h3>
+                                <p class="text-sm font-medium text-gray-600">${nomeCliente}</p>
+                            </div>
+                            <span class="text-xs font-semibold ${borderColor.replace('border-', 'bg-').replace('-500', '-100')} ${borderColor.replace('border-', 'text-').replace('-500', '-800')} px-2 py-1 rounded-full">${evento.tipo}</span>
+                        </div>
                         <p class="text-gray-600 mt-2"><i data-lucide="calendar" class="inline-block w-4 h-4 mr-1"></i> ${dataFormatada}</p>
-                        <p class="text-gray-500 mt-2 text-sm">${evento.programacao || 'Sem detalhes definidos.'}</p>
+                        <p class="text-gray-600 mt-1"><i data-lucide="map-pin" class="inline-block w-4 h-4 mr-1"></i> ${evento.local || 'Local a definir'}</p>
+                        <p class="text-gray-500 mt-2 text-sm">${evento.descricao || 'Sem detalhes definidos.'}</p>
                         <div class="mt-4"><button onclick="window.app.deleteItem('eventos', '${evento.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>
                     </div>`;
                 }).join('');
             }
+            // ######################################################
+
 
             // ######################################################
-            // ALTERAÇÃO AQUI: Função "renderAlunos" para "renderClientes"
+            // ALTERAÇÃO AQUI: Função "renderClientes" atualizada
             // ######################################################
             function renderClientes() {
                 const lista = document.getElementById('lista-clientes');
@@ -671,8 +674,8 @@
                     ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>'
                     : dbState.clientes.map(cliente => {
                         
-                        // Lógica de contagem de eventos (implementação futura)
-                        const numEventos = 0; //dbState.eventos.filter(e => e.clienteId === cliente.id).length;
+                        // Contagem de eventos agora funciona
+                        const numEventos = dbState.eventos.filter(e => e.clienteId === cliente.id).length;
 
                         return `
                         <tr class="border-b hover:bg-gray-50">
@@ -699,28 +702,22 @@
 
             function renderFinanceiro() {
                 const lista = document.getElementById('lista-financeiro');
-                // ######################################################
-                // ALTERAÇÃO AQUI: Lógica de filtro "hasContract" removida
-                // ######################################################
                 const clienteIds = dbState.clientes.map(a => a.id);
-                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId)); // <- Alterado de alunoId
+                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
 
                 lista.innerHTML = financeiroFiltrado.length === 0 
                     ? '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum lançamento financeiro.</td></tr>'
                     : financeiroFiltrado.map(item => {
-                        // ######################################################
-                        // ALTERAÇÃO AQUI: "aluno" para "cliente"
-                        // ######################################################
-                        const cliente = dbState.clientes.find(a => a.id === item.clienteId); // <- Alterado de alunoId
+                        const cliente = dbState.clientes.find(a => a.id === item.clienteId);
                         if (!cliente) return ''; 
-                        // ######################################################
 
                         const statusClass = item.status === 'Pago' ? 'bg-green-100 text-green-800' : (item.status === 'Pendente' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800');
                         const total = parseFloat(item.total) || 0;
                         const pago = parseFloat(item.pago) || 0;
                         const restante = total - pago;
                         return `<tr class="border-b hover:bg-gray-50">
-                            <td class="p-4">${cliente.nome}</td> <td class="p-4">R$ ${total.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4">${cliente.nome}</td>
+                            <td class="p-4">R$ ${total.toFixed(2).replace('.', ',')}</td>
                             <td class="p-4">R$ ${pago.toFixed(2).replace('.', ',')}</td>
                             <td class="p-4 font-medium ${restante > 0 ? 'text-red-600' : 'text-green-600'}">R$ ${restante.toFixed(2).replace('.', ',')}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">${item.status}</span></td>
@@ -751,13 +748,18 @@
             function populateFotosEventoSelect() {
                 const select = document.getElementById('fotos-evento-select');
                 select.innerHTML = '<option value="">Selecione um evento para começar</option>';
+                // ######################################################
+                // ALTERAÇÃO AQUI: Mostra o nome do cliente no select
+                // ######################################################
                 dbState.eventos.forEach(evento => {
+                    const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
+                    const nomeCliente = cliente ? `(${cliente.nome})` : '';
                     const option = document.createElement('option');
                     option.value = evento.id;
-                    const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
-                    option.textContent = `${evento.nome} - ${dataFormatada}`;
+                    option.textContent = `${evento.nome} ${nomeCliente}`;
                     select.appendChild(option);
                 });
+                // ######################################################
                 select.value = selectedEventIdForFotos;
             }
 
@@ -800,10 +802,7 @@
 
             function renderChecklist() {
                 const container = document.getElementById('checklist-container');
-                // ######################################################
-                // ALTERAÇÃO AQUI: "alunos" para "clientes"
-                // ######################################################
-                const todosClientes = [...dbState.clientes]; // Já vem ordenada
+                const todosClientes = [...dbState.clientes]; 
 
                 if (todosClientes.length === 0 || dbState.cenarios.length === 0) {
                     container.innerHTML = '<p class="p-4 text-center text-gray-500">Adicione clientes (na seção "Clientes") e cenários/etapas para montar o checklist.</p>';
@@ -811,16 +810,12 @@
                 }
 
                 let headHTML = '<tr><th class="p-4 text-left text-sm font-semibold text-gray-600 sticky left-0 z-30 bg-gray-50">Cliente</th>';
-                // ######################################################
 
                 dbState.cenarios.forEach(cenario => {
                     headHTML += `<th class="p-4 text-center text-sm font-semibold text-gray-600">${cenario.nome}</th>`;
                 });
                 headHTML += '</tr>';
 
-                // ######################################################
-                // ALTERAÇÃO AQUI: "aluno" para "cliente"
-                // ######################################################
                 let bodyHTML = todosClientes.map(cliente => {
                     let rowHTML = `<tr class="border-b hover:bg-gray-50">
                                     <td class="p-4 font-medium sticky left-0 bg-white z-10 whitespace-nowrap">${cliente.nome}</td>`;
@@ -835,7 +830,6 @@
                     rowHTML += '</tr>';
                     return rowHTML;
                 }).join('');
-                // ######################################################
 
                 container.innerHTML = `
                     <table class="w-full min-w-max">
@@ -853,11 +847,22 @@
                 } catch (error) { console.error("Erro ao adicionar documento: ", error); }
             }
             
-            document.getElementById('form-evento').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('eventos', { nome: this.elements['evento-nome'].value, data: this.elements['evento-data'].value, programacao: this.elements['evento-programacao'].value }, this); });
+            // ######################################################
+            // ALTERAÇÃO AQUI: "form-evento" atualizado com novos campos
+            // ######################################################
+            document.getElementById('form-evento').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                handleFormSubmit('eventos', { 
+                    clienteId: this.elements['evento-cliente'].value,
+                    nome: this.elements['evento-nome'].value, 
+                    data: this.elements['evento-data'].value, 
+                    local: this.elements['evento-local'].value,
+                    tipo: this.elements['evento-tipo'].value,
+                    descricao: this.elements['evento-descricao'].value 
+                }, this); 
+            });
+            // ######################################################
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: "form-aluno" para "form-cliente" e novos campos
-            // ######################################################
             document.getElementById('form-cliente').addEventListener('submit', function(e) { 
                 e.preventDefault(); 
                 handleFormSubmit('clientes', { 
@@ -867,15 +872,10 @@
                     documento: this.elements['cliente-documento'].value
                 }, this); 
             });
-            // ######################################################
 
             document.getElementById('form-fotografo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('fotografos', { nome: this.elements['fotografo-nome'].value, contato: this.elements['fotografo-contato'].value }, this); });
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: "financeiro-aluno" para "financeiro-cliente"
-            // ######################################################
             document.getElementById('form-financeiro').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('financeiro', { clienteId: this.elements['financeiro-cliente'].value, total: parseFloat(this.elements['financeiro-valor-total'].value), pago: parseFloat(this.elements['financeiro-valor-pago'].value), status: this.elements['financeiro-status'].value }, this); });
-            // ######################################################
             
             document.getElementById('form-custo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('custos', { descricao: this.elements['custo-descricao'].value, valor: parseFloat(this.elements['custo-valor'].value), eventoId: this.elements['custo-evento'].value }, this); });
             
@@ -904,13 +904,20 @@
                 select.value = selectedValue;
             }
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: "populateAlunoSelect" para "populateClienteSelect"
-            // ######################################################
             function populateClienteSelect() {
-                populateSelectWithOptions('financeiro-cliente', { // <- ID do select atualizado
+                populateSelectWithOptions('financeiro-cliente', {
                     header: '<option value="">Selecione o Cliente</option>', 
-                    data: dbState.clientes // <- Fonte de dados atualizada
+                    data: dbState.clientes
+                });
+            }
+            
+            // ######################################################
+            // ALTERAÇÃO AQUI: Nova função
+            // ######################################################
+            function populateEventoClienteSelect() {
+                populateSelectWithOptions('evento-cliente', {
+                    header: '<option value="">Selecione o Cliente</option>', 
+                    data: dbState.clientes
                 });
             }
             // ######################################################
@@ -931,6 +938,11 @@
                     if (!userId) return;
                     if (confirm(`Tem certeza que deseja excluir este item?`)) {
                         try {
+                            // ######################################################
+                            // ATENÇÃO: Adicionar lógica para deletar itens filhos
+                            // (Ex: ao deletar cliente, deletar seus eventos, etc.)
+                            // Por enquanto, é uma deleção simples.
+                            // ######################################################
                             await deleteDoc(doc(db, `users/${userId}/${collectionName}/${id}`));
                         } catch (error) { console.error("Erro ao deletar documento: ", error); }
                     }
@@ -953,13 +965,9 @@
                         } catch (error) { console.error("Erro ao deletar cenário: ", error); }
                     }
                 },
-                // ######################################################
-                // ALTERAÇÃO AQUI: "alunoId" para "clienteId"
-                // ######################################################
                 updateChecklist: async (clienteId, cenarioId, isChecked) => {
                     if (!userId || !selectedEventIdForFotos) return;
                     const path = `users/${userId}/eventos/${selectedEventIdForFotos}/checklist/${clienteId}`;
-                    // ######################################################
                     try {
                         await setDoc(doc(db, path), { [cenarioId]: isChecked }, { merge: true });
                     } catch (error) { console.error("Erro ao atualizar checklist:", error); }
