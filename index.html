@@ -93,9 +93,13 @@
                 <a href="#" onclick="window.app.showSection('clientes')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="contact" class="inline-block w-5 h-5 mr-2"></i> Clientes
                 </a>
-                <a href="#" onclick="window.app.showSection('fotos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
-                    <i data-lucide="image" class="inline-block w-5 h-5 mr-2"></i> Fotos
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Menu "Fotos" para "Entrega" -->
+                <!-- ###################################################### -->
+                <a href="#" onclick="window.app.showSection('entrega')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="package-check" class="inline-block w-5 h-5 mr-2"></i> Entrega
                 </a>
+                <!-- ###################################################### -->
                 <a href="#" onclick="window.app.showSection('fotografos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="user-square" class="inline-block w-5 h-5 mr-2"></i> Fotógrafos
                 </a>
@@ -215,8 +219,11 @@
                         </form>
                     </div>
                     <div id="lista-eventos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        </div>
+                        <!-- Os cards de evento aparecerão aqui -->
+                    </div>
                 </div>
+
+
                 <div id="section-clientes" class="content-section hidden">
                      <h1 class="text-3xl font-bold text-gray-800 mb-6">Clientes</h1>
                      <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -251,31 +258,28 @@
                 </div>
                 
                 
-                <div id="section-fotos" class="content-section hidden">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle de Fotos</h1>
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Seção "Fotos" para "Entrega" -->
+                <!-- ###################################################### -->
+                <div id="section-entrega" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestão de Entregas</h1>
                     
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                         <div class="mb-4">
-                            <label for="fotos-evento-select" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Evento</label>
-                            <select id="fotos-evento-select" class="w-full p-2 border rounded"></select>
+                            <label for="entrega-evento-select" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Evento</label>
+                            <select id="entrega-evento-select" class="w-full p-2 border rounded">
+                                <option value="">Selecione um evento para ver os prazos</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div id="fotos-management-area" class="hidden">
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4">Gerenciar Cenários/Etapas</h2>
-                            <form id="form-cenario" class="flex items-center gap-4">
-                                <input type="text" id="cenario-nome" placeholder="Nome do Cenário ou Etapa" class="w-full p-2 border rounded" required>
-                                <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition whitespace-nowrap">Adicionar</button>
-                            </form>
-                            <div id="lista-cenarios" class="mt-4 space-y-2">
-                                </div>
-                        </div>
-
-                        <div id="checklist-container" class="bg-white rounded-lg shadow-md overflow-auto max-h-[70vh]">
-                           </div>
+                    <!-- Nova área de gerenciamento de entrega -->
+                    <div id="entrega-management-area" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Os cards de entrega serão inseridos aqui pelo JS -->
                     </div>
                 </div>
+                <!-- ###################################################### -->
+
 
                 <div id="section-fotografos" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Fotógrafos</h1>
@@ -387,32 +391,14 @@
         document.addEventListener('DOMContentLoaded', async function() {
             
             // --- CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE ---
-            // ##################################################################
-            // ##################################################################
-            //
-            // COLE AQUI A CONFIGURAÇÃO DO SEU NOVO PROJETO FIREBASE
-            // (Substitua este bloco de exemplo)
-            //
             const firebaseConfig = {
-
-  apiKey: "AIzaSyD5ugoPst247l63pmUZBqiTG3LzbJ68LOo",
-
-  authDomain: "wilkson-gestor-contratos.firebaseapp.com",
-
-  projectId: "wilkson-gestor-contratos",
-
-  storageBucket: "wilkson-gestor-contratos.firebasestorage.app",
-
-  messagingSenderId: "391559952649",
-
-  appId: "1:391559952649:web:f01e6262927eaea675bbd8"
-
-};
-
-            //
-            //
-            // ##################################################################
-            // ##################################################################
+              apiKey: "AIzaSyD5ugoPst247l63pmUZBqiTG3LzbJ68LOo",
+              authDomain: "wilkson-gestor-contratos.firebaseapp.com",
+              projectId: "wilkson-gestor-contratos",
+              storageBucket: "wilkson-gestor-contratos.firebasestorage.app",
+              messagingSenderId: "391559952649",
+              appId: "1:391559952649:web:f01e6262927eaea675bbd8"
+            };
 
 
             const app = initializeApp(firebaseConfig);
@@ -420,19 +406,22 @@
             const db = getFirestore(app);
             
             let userId = null;
+            
+            // ######################################################
+            // ALTERAÇÃO AQUI: "cenarios" e "checklist" removidos
+            // ######################################################
             let dbState = { 
                 eventos: [], 
                 clientes: [], 
                 fotografos: [], 
                 financeiro: [], 
-                custos: [], 
-                cenarios: [], 
-                checklist: {} 
+                custos: []
             };
+            // ######################################################
             
             let unsubscribeListeners = [];
-            let unsubscribeChecklistListeners = [];
-            let selectedEventIdForFotos = null;
+            // Listener de checklist removido
+            let selectedEventIdForEntrega = null; // <- Renomeado
 
             // --- AUTENTICAÇÃO ---
             onAuthStateChanged(auth, (user) => {
@@ -550,37 +539,18 @@
                 });
             }
 
-            // --- LISTENERS PARA SEÇÃO FOTOS ---
-            function setupChecklistListeners(eventId) {
-                if (!userId || !eventId) return;
-                unsubscribeChecklistListeners.forEach(unsub => unsub());
-                unsubscribeChecklistListeners = [];
-
-                const cenariosPath = `users/${userId}/eventos/${eventId}/cenarios`;
-                const unsubCenarios = onSnapshot(collection(db, cenariosPath), (snapshot) => {
-                    dbState.cenarios = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderCenariosAndChecklist();
-                });
-
-                const checklistPath = `users/${userId}/eventos/${eventId}/checklist`;
-                const unsubChecklist = onSnapshot(collection(db, checklistPath), (snapshot) => {
-                    dbState.checklist = {};
-                    snapshot.docs.forEach(doc => {
-                        dbState.checklist[doc.id] = doc.data();
-                    });
-                    renderCenariosAndChecklist();
-                });
-                
-                unsubscribeChecklistListeners.push(unsubCenarios, unsubChecklist);
-            }
+            // --- Listeners de checklist removidos ---
 
             function clearAllData() {
+                // ######################################################
+                // ALTERAÇÃO AQUI: "cenarios" e "checklist" removidos
+                // ######################################################
                 dbState = { 
-                    eventos: [], clientes: [], fotografos: [], financeiro: [], custos: [], 
-                    cenarios: [], checklist: {} 
+                    eventos: [], clientes: [], fotografos: [], financeiro: [], custos: []
                 };
-                selectedEventIdForFotos = null;
-                document.getElementById('fotos-management-area').classList.add('hidden');
+                // ######################################################
+                selectedEventIdForEntrega = null; // <- Renomeado
+                document.getElementById('entrega-management-area').classList.add('hidden');
             }
 
             function renderAll() {
@@ -592,12 +562,17 @@
                 updateDashboard();
                 populateClienteSelect();
                 populateEventoSelect();
-                // ######################################################
-                // ALTERAÇÃO AQUI: Nova função chamada
-                // ######################################################
                 populateEventoClienteSelect(); 
+                populateEntregaEventoSelect(); // <- Renomeado
+                
                 // ######################################################
-                populateFotosEventoSelect();
+                // ALTERAÇÃO AQUI: Renderiza o card de entrega se um evento já estiver selecionado
+                // ######################################################
+                if (selectedEventIdForEntrega) {
+                    renderEntregaCards(selectedEventIdForEntrega);
+                }
+                // ######################################################
+
                 lucide.createIcons();
             }
 
@@ -634,19 +609,14 @@
                     }).join('');
             }
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: Função "renderEventos" atualizada
-            // ######################################################
             function renderEventos() {
                 const lista = document.getElementById('lista-eventos');
                 lista.innerHTML = dbState.eventos.map(evento => {
                     const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
-                    // Busca o nome do cliente
                     const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
                     const nomeCliente = cliente ? cliente.nome : "Cliente não encontrado";
 
-                    // Define a cor da borda com base no tipo de evento
-                    let borderColor = 'border-blue-500'; // Padrão
+                    let borderColor = 'border-blue-500';
                     switch(evento.tipo) {
                         case 'Casamento': borderColor = 'border-pink-500'; break;
                         case 'Infantil': borderColor = 'border-yellow-500'; break;
@@ -670,21 +640,14 @@
                     </div>`;
                 }).join('');
             }
-            // ######################################################
 
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: Função "renderClientes" atualizada
-            // ######################################################
             function renderClientes() {
                 const lista = document.getElementById('lista-clientes');
                 lista.innerHTML = dbState.clientes.length === 0 
                     ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>'
                     : dbState.clientes.map(cliente => {
-                        
-                        // Contagem de eventos agora funciona
                         const numEventos = dbState.eventos.filter(e => e.clienteId === cliente.id).length;
-
                         return `
                         <tr class="border-b hover:bg-gray-50">
                             <td class="p-4 font-medium">${cliente.nome}</td>
@@ -695,7 +658,6 @@
                         </tr>`;
                     }).join('');
             }
-            // ######################################################
 
             function renderFotografos() {
                 const lista = document.getElementById('lista-fotografos');
@@ -752,13 +714,14 @@
                     }).join('');
             }
             
-            // --- LÓGICA DA SEÇÃO DE FOTOS ---
-            function populateFotosEventoSelect() {
-                const select = document.getElementById('fotos-evento-select');
-                select.innerHTML = '<option value="">Selecione um evento para começar</option>';
-                // ######################################################
-                // ALTERAÇÃO AQUI: Mostra o nome do cliente no select
-                // ######################################################
+            // ######################################################
+            // ALTERAÇÃO AQUI: Lógica da Seção "Entrega"
+            // ######################################################
+
+            // Popula o select de eventos na seção Entrega
+            function populateEntregaEventoSelect() {
+                const select = document.getElementById('entrega-evento-select');
+                select.innerHTML = '<option value="">Selecione um evento para ver os prazos</option>';
                 dbState.eventos.forEach(evento => {
                     const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
                     const nomeCliente = cliente ? `(${cliente.nome})` : '';
@@ -767,84 +730,143 @@
                     option.textContent = `${evento.nome} ${nomeCliente}`;
                     select.appendChild(option);
                 });
-                // ######################################################
-                select.value = selectedEventIdForFotos;
+                select.value = selectedEventIdForEntrega;
             }
 
-            document.getElementById('fotos-evento-select').addEventListener('change', (e) => {
-                selectedEventIdForFotos = e.target.value;
-                const managementArea = document.getElementById('fotos-management-area');
-                if (selectedEventIdForFotos) {
+            // Listener para o select de eventos
+            document.getElementById('entrega-evento-select').addEventListener('change', (e) => {
+                selectedEventIdForEntrega = e.target.value;
+                const managementArea = document.getElementById('entrega-management-area');
+                if (selectedEventIdForEntrega) {
                     managementArea.classList.remove('hidden');
-                    setupChecklistListeners(selectedEventIdForFotos);
+                    renderEntregaCards(selectedEventIdForEntrega);
                 } else {
                     managementArea.classList.add('hidden');
-                    unsubscribeChecklistListeners.forEach(unsub => unsub());
-                    dbState.cenarios = [];
-                    dbState.checklist = {};
-                    renderCenariosAndChecklist();
+                    managementArea.innerHTML = '';
                 }
             });
-            
-            function renderCenariosAndChecklist() {
-                renderCenarios();
-                renderChecklist();
-                lucide.createIcons();
-            }
 
-            function renderCenarios() {
-                const container = document.getElementById('lista-cenarios');
-                if (dbState.cenarios.length === 0) {
-                    container.innerHTML = '<p class="text-sm text-gray-500">Nenhum cenário adicionado.</p>';
-                    return;
-                }
-                container.innerHTML = dbState.cenarios.map(cenario => `
-                    <div class="flex items-center justify-between bg-gray-100 p-2 rounded">
-                        <span class="text-gray-700">${cenario.nome}</span>
-                        <button onclick="window.app.deleteCenario('${cenario.id}')" class="text-red-500 hover:text-red-700">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `).join('');
-            }
-
-            function renderChecklist() {
-                const container = document.getElementById('checklist-container');
-                const todosClientes = [...dbState.clientes]; 
-
-                if (todosClientes.length === 0 || dbState.cenarios.length === 0) {
-                    container.innerHTML = '<p class="p-4 text-center text-gray-500">Adicione clientes (na seção "Clientes") e cenários/etapas para montar o checklist.</p>';
-                    return;
+            // Função para calcular dias restantes e formatar texto
+            function getEntregaInfo(evento, tipo) {
+                const dataEventoStr = evento.data;
+                if (!dataEventoStr) {
+                    return { status: 'nodate', text: 'Data do evento não definida', deadline: 'N/A', bgColor: 'bg-gray-100', textColor: 'text-gray-500' };
                 }
 
-                let headHTML = '<tr><th class="p-4 text-left text-sm font-semibold text-gray-600 sticky left-0 z-30 bg-gray-50">Cliente</th>';
+                // Corrige o problema de timezone ao criar datas
+                const dataEvento = new Date(dataEventoStr + 'T00:00:00');
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0); // Zera o tempo para comparar só as datas
 
-                dbState.cenarios.forEach(cenario => {
-                    headHTML += `<th class="p-4 text-center text-sm font-semibold text-gray-600">${cenario.nome}</th>`;
-                });
-                headHTML += '</tr>';
+                let dataPrazo = new Date(dataEvento);
+                let statusField, dataField, title;
 
-                let bodyHTML = todosClientes.map(cliente => {
-                    let rowHTML = `<tr class="border-b hover:bg-gray-50">
-                                    <td class="p-4 font-medium sticky left-0 bg-white z-10 whitespace-nowrap">${cliente.nome}</td>`;
+                if (tipo === 'previa') {
+                    dataPrazo.setDate(dataEvento.getDate() + 3);
+                    statusField = 'entrega_previa_status';
+                    dataField = 'entrega_previa_data';
+                    title = 'PRÉVIA';
+                } else if (tipo === 'midia') {
+                    dataPrazo.setDate(dataEvento.getDate() + 60);
+                    statusField = 'entrega_midia_status';
+                    dataField = 'entrega_midia_data';
+                    title = 'FOTOS EM MÍDIA';
+                } else if (tipo === 'album') {
+                    dataPrazo.setMonth(dataEvento.getMonth() + 6);
+                    statusField = 'entrega_album_status';
+                    dataField = 'entrega_album_data';
+                    title = 'ALBUM IMPRESSO';
+                }
+
+                const prazoFormatado = dataPrazo.toLocaleDateString('pt-BR');
+
+                // Verifica se já foi entregue
+                if (evento[statusField] === 'Entregue') {
+                    const dataEntrega = evento[dataField] ? new Date(evento[dataField]).toLocaleDateString('pt-BR') : '';
+                    return { 
+                        title, 
+                        status: 'entregue', 
+                        text: `Entregue em ${dataEntrega}`, 
+                        deadline: `Prazo: ${prazoFormatado}`, 
+                        bgColor: 'bg-green-100', 
+                        textColor: 'text-green-800' 
+                    };
+                }
+
+                // Calcula os dias restantes
+                const diffTime = dataPrazo.getTime() - hoje.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays < 0) {
+                    return { 
+                        title, 
+                        status: 'atrasado', 
+                        text: `${Math.abs(diffDays)} dia(s) atrasado`, 
+                        deadline: `Prazo: ${prazoFormatado}`, 
+                        bgColor: 'bg-red-100', 
+                        textColor: 'text-red-800' 
+                    };
+                }
+                if (diffDays === 0) {
+                    return { 
+                        title, 
+                        status: 'hoje', 
+                        text: 'Vence Hoje', 
+                        deadline: `Prazo: ${prazoFormatado}`, 
+                        bgColor: 'bg-yellow-100', 
+                        textColor: 'text-yellow-800' 
+                    };
+                }
+                return { 
+                    title, 
+                    status: 'pendente', 
+                    text: `Vence em ${diffDays} dia(s)`, 
+                    deadline: `Prazo: ${prazoFormatado}`, 
+                    bgColor: 'bg-blue-100', 
+                    textColor: 'text-blue-800' 
+                };
+            }
+
+            // Renderiza os 3 cards de entrega
+            function renderEntregaCards(eventId) {
+                const evento = dbState.eventos.find(e => e.id === eventId);
+                const container = document.getElementById('entrega-management-area');
+                
+                if (!evento) {
+                    container.innerHTML = '<p class="text-red-500">Erro: Evento não encontrado.</p>';
+                    return;
+                }
+
+                const tipos = ['previa', 'midia', 'album'];
+                container.innerHTML = tipos.map(tipo => {
+                    const info = getEntregaInfo(evento, tipo);
                     
-                    dbState.cenarios.forEach(cenario => {
-                        const isChecked = dbState.checklist[cliente.id] && dbState.checklist[cliente.id][cenario.id];
-                        rowHTML += `<td class="p-4 text-center">
-                            <input type="checkbox" onchange="window.app.updateChecklist('${cliente.id}', '${cenario.id}', this.checked)" 
-                                   class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" ${isChecked ? 'checked' : ''}>
-                        </td>`;
-                    });
-                    rowHTML += '</tr>';
-                    return rowHTML;
+                    const buttonHtml = info.status === 'entregue'
+                        ? `<button class="w-full bg-green-500 text-white font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-2" disabled>
+                                <i data-lucide="check-circle" class="w-5 h-5"></i> Entregue
+                           </button>`
+                        : `<button onclick="window.app.marcarEntregue('${eventId}', '${tipo}')" class="w-full bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+                                Marcar como Entregue
+                           </button>`;
+
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between ${info.bgColor} ${info.textColor}">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">${info.title}</h3>
+                                <p class="text-2xl font-bold mt-2">${info.text}</p>
+                                <p class="text-sm text-gray-600 mt-1">${info.deadline}</p>
+                            </div>
+                            <div class="mt-6">
+                                ${buttonHtml}
+                            </div>
+                        </div>
+                    `;
                 }).join('');
 
-                container.innerHTML = `
-                    <table class="w-full min-w-max">
-                        <thead class="bg-gray-50 sticky top-0 z-20">${headHTML}</thead>
-                        <tbody>${bodyHTML}</tbody>
-                    </table>`;
+                lucide.createIcons(); // Recria os ícones do Lucide
             }
+
+            // --- Funções de checklist removidas ---
 
             // --- MANIPULADORES DE EVENTOS (SUBMIT FORMS) ---
             async function handleFormSubmit(collectionName, data, formElement) {
@@ -856,7 +878,7 @@
             }
             
             // ######################################################
-            // ALTERAÇÃO AQUI: "form-evento" atualizado com novos campos
+            // ALTERAÇÃO AQUI: Adiciona campos de entrega ao criar evento
             // ######################################################
             document.getElementById('form-evento').addEventListener('submit', function(e) { 
                 e.preventDefault(); 
@@ -866,7 +888,14 @@
                     data: this.elements['evento-data'].value, 
                     local: this.elements['evento-local'].value,
                     tipo: this.elements['evento-tipo'].value,
-                    descricao: this.elements['evento-descricao'].value 
+                    descricao: this.elements['evento-descricao'].value,
+                    // Adiciona os campos de status de entrega
+                    entrega_previa_status: "Pendente",
+                    entrega_midia_status: "Pendente",
+                    entrega_album_status: "Pendente",
+                    entrega_previa_data: null,
+                    entrega_midia_data: null,
+                    entrega_album_data: null
                 }, this); 
             });
             // ######################################################
@@ -887,17 +916,7 @@
             
             document.getElementById('form-custo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('custos', { descricao: this.elements['custo-descricao'].value, valor: parseFloat(this.elements['custo-valor'].value), eventoId: this.elements['custo-evento'].value }, this); });
             
-            document.getElementById('form-cenario').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                if (!userId || !selectedEventIdForFotos) return;
-                const nomeCenario = this.elements['cenario-nome'].value;
-                if (!nomeCenario.trim()) return;
-                const path = `users/${userId}/eventos/${selectedEventIdForFotos}/cenarios`;
-                try {
-                    await addDoc(collection(db, path), { nome: nomeCenario });
-                    this.reset();
-                } catch (error) { console.error("Erro ao adicionar cenário:", error); }
-            });
+            // --- Formulário de cenário removido ---
 
             function populateSelectWithOptions(selectId, options) {
                 const select = document.getElementById(selectId);
@@ -919,16 +938,12 @@
                 });
             }
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: Nova função
-            // ######################################################
             function populateEventoClienteSelect() {
                 populateSelectWithOptions('evento-cliente', {
                     header: '<option value="">Selecione o Cliente</option>', 
                     data: dbState.clientes
                 });
             }
-            // ######################################################
             
             function populateEventoSelect() {
                 populateSelectWithOptions('custo-evento', { header: '<option value="">Selecione o Evento</option>', data: dbState.eventos });
@@ -946,11 +961,8 @@
                     if (!userId) return;
                     if (confirm(`Tem certeza que deseja excluir este item?`)) {
                         try {
-                            // ######################################################
                             // ATENÇÃO: Adicionar lógica para deletar itens filhos
                             // (Ex: ao deletar cliente, deletar seus eventos, etc.)
-                            // Por enquanto, é uma deleção simples.
-                            // ######################################################
                             await deleteDoc(doc(db, `users/${userId}/${collectionName}/${id}`));
                         } catch (error) { console.error("Erro ao deletar documento: ", error); }
                     }
@@ -964,22 +976,32 @@
                     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-gray-700'));
                     event.currentTarget.classList.add('bg-gray-700');
                 },
-                deleteCenario: async (cenarioId) => {
-                    if (!userId || !selectedEventIdForFotos || !cenarioId) return;
-                    if (confirm('Tem certeza que deseja excluir este cenário?')) {
-                        const path = `users/${userId}/eventos/${selectedEventIdForFotos}/cenarios/${cenarioId}`;
-                        try {
-                            await deleteDoc(doc(db, path));
-                        } catch (error) { console.error("Erro ao deletar cenário: ", error); }
-                    }
-                },
-                updateChecklist: async (clienteId, cenarioId, isChecked) => {
-                    if (!userId || !selectedEventIdForFotos) return;
-                    const path = `users/${userId}/eventos/${selectedEventIdForFotos}/checklist/${clienteId}`;
+
+                // ######################################################
+                // ALTERAÇÃO AQUI: Novas/antigas funções de app
+                // ######################################################
+
+                // Funções deleteCenario e updateChecklist removidas
+
+                // Nova função para marcar um item como entregue
+                marcarEntregue: async (eventId, tipo) => {
+                    if (!userId || !eventId || !tipo) return;
+                    
+                    const docRef = doc(db, `users/${userId}/eventos/${eventId}`);
+                    const statusField = `entrega_${tipo}_status`;
+                    const dataField = `entrega_${tipo}_data`;
+
                     try {
-                        await setDoc(doc(db, path), { [cenarioId]: isChecked }, { merge: true });
-                    } catch (error) { console.error("Erro ao atualizar checklist:", error); }
+                        await updateDoc(docRef, {
+                            [statusField]: "Entregue",
+                            [dataField]: new Date().toISOString() // Salva a data de hoje
+                        });
+                        // O onSnapshot vai atualizar a UI automaticamente
+                    } catch (error) {
+                        console.error("Erro ao marcar como entregue: ", error);
+                    }
                 }
+                // ######################################################
             };
 
             // --- UI/Mobile ---
@@ -992,3 +1014,4 @@
     </script>
 </body>
 </html>
+
