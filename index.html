@@ -59,15 +59,37 @@
         </div>
     </div>
     
-    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
+    <!-- ###################################################### -->
+    <!-- ALTERAÇÃO AQUI: Modal de Pagamento atualizado -->
+    <!-- ###################################################### -->
+    <div id="add-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
         <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Pagamento</h2>
-            <form id="payment-form">
-                <input type="hidden" id="payment-doc-id">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Pagamento</h2>
+            <form id="add-payment-form">
+                <input type="hidden" id="payment-contrato-id">
+                
                 <div class="mb-4">
                     <label for="payment-amount" class="block text-sm font-medium text-gray-700 mb-1">Valor do Pagamento (R$)</label>
                     <input type="number" step="0.01" id="payment-amount" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="payment-date" class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                        <input type="date" id="payment-date" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="payment-method" class="block text-sm font-medium text-gray-700 mb-1">Forma</label>
+                        <select id="payment-method" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="PIX">PIX</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Cartão">Cartão</option>
+                            <option value="Transferência">Transferência</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="flex justify-end gap-4">
                     <button type="button" id="cancel-payment-button" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition-colors">Cancelar</button>
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">Salvar Pagamento</button>
@@ -75,6 +97,8 @@
             </form>
         </div>
     </div>
+    <!-- ###################################################### -->
+
 
     <div id="app-container" class="hidden h-screen w-full md:flex">
         <aside id="sidebar" class="sidebar bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0">
@@ -93,13 +117,9 @@
                 <a href="#" onclick="window.app.showSection('eventos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="calendar-days" class="inline-block w-5 h-5 mr-2"></i> Eventos
                 </a>
-                <!-- ###################################################### -->
-                <!-- ALTERAÇÃO AQUI: Novo item de menu "Contratos" -->
-                <!-- ###################################################### -->
                 <a href="#" onclick="window.app.showSection('contratos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="file-text" class="inline-block w-5 h-5 mr-2"></i> Contratos
                 </a>
-                <!-- ###################################################### -->
                 <a href="#" onclick="window.app.showSection('entrega')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="package-check" class="inline-block w-5 h-5 mr-2"></i> Entrega
                 </a>
@@ -259,9 +279,6 @@
                     </div>
                 </div>
 
-                <!-- ###################################################### -->
-                <!-- ALTERAÇÃO AQUI: Nova Seção "Contratos" -->
-                <!-- ###################################################### -->
                 <div id="section-contratos" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestão de Contratos</h1>
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -295,14 +312,16 @@
                             <button type="submit" class="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition">Adicionar Contrato</button>
                         </form>
                     </div>
-                    <!-- Tabela de Contratos -->
+                    <!-- ###################################################### -->
+                    <!-- ALTERAÇÃO AQUI: Tabela de Contratos atualizada -->
+                    <!-- ###################################################### -->
                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
                         <table class="w-full min-w-max">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Evento</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Total</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Financeiro (Total / Pago / Restante)</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Status</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
                                 </tr>
@@ -312,8 +331,8 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- ###################################################### -->
                 </div>
-                <!-- ###################################################### -->
 
 
                 <div id="section-entrega" class="content-section hidden">
@@ -368,43 +387,33 @@
                     </div>
                 </div>
 
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Seção "Financeiro" (agora um extrato) -->
+                <!-- ###################################################### -->
                 <div id="section-financeiro" class="content-section hidden">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle Financeiro</h1>
-                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Lançamento Inicial</h2>
-                        <form id="form-financeiro">
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                               <select id="financeiro-cliente" class="w-full p-2 border rounded" required>
-                                   <option value="">Selecione o Cliente</option>
-                               </select>
-                                <input type="number" step="0.01" id="financeiro-valor-total" placeholder="Valor Total (R$)" class="w-full p-2 border rounded" required>
-                                <input type="number" step="0.01" id="financeiro-valor-pago" placeholder="1º Pagamento (R$)" class="w-full p-2 border rounded" required>
-                                <select id="financeiro-status" class="w-full p-2 border rounded" required>
-                                   <option value="Pendente">Pendente</option>
-                                   <option value="Pago Parcialmente">Pago Parcialmente</option>
-                                   <option value="Pago">Pago</option>
-                               </select>
-                            </div>
-                            <button type="submit" class="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">Adicionar Lançamento</button>
-                        </form>
-                    </div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Histórico de Pagamentos</h1>
+                    
+                    <!-- Formulário de Lançamento Removido -->
+                    
                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
                         <table class="w-full min-w-max">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Data</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Total</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Contrato (Evento)</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Forma</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Pago</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Restante</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Status</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="lista-financeiro">
+                                <!-- Pagamentos individuais serão listados aqui -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+                <!-- ###################################################### -->
                 
                 <div id="section-custos" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle de Custos</h1>
@@ -466,18 +475,14 @@
             const db = getFirestore(app);
             
             let userId = null;
-            // ######################################################
-            // ALTERAÇÃO AQUI: "contratos" adicionado ao dbState
-            // ######################################################
             let dbState = { 
                 eventos: [], 
                 clientes: [], 
-                contratos: [], // <- NOVO
+                contratos: [], 
                 fotografos: [], 
-                financeiro: [], 
+                financeiro: [], // Agora é uma lista de pagamentos
                 custos: []
             };
-            // ######################################################
             
             let unsubscribeListeners = [];
             let selectedEventIdForEntrega = null;
@@ -547,45 +552,54 @@
 
             document.getElementById('logout-button').addEventListener('click', () => signOut(auth));
 
-            // --- Lógica do Modal de Pagamento (sem alterações) ---
-            const paymentModal = document.getElementById('payment-modal');
-            const paymentForm = document.getElementById('payment-form');
+            // ######################################################
+            // ALTERAÇÃO AQUI: Lógica do Modal de Pagamento atualizada
+            // ######################################################
+            const addPaymentModal = document.getElementById('add-payment-modal');
+            const addPaymentForm = document.getElementById('add-payment-form');
+            
             document.getElementById('cancel-payment-button').addEventListener('click', () => {
-                paymentModal.classList.add('hidden');
-                paymentModal.classList.remove('flex');
+                addPaymentModal.classList.add('hidden');
+                addPaymentModal.classList.remove('flex');
             });
-            paymentForm.addEventListener('submit', async (e) => {
+            
+            // Listener para ADICIONAR um novo pagamento
+            addPaymentForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const docId = document.getElementById('payment-doc-id').value;
-                const amount = parseFloat(document.getElementById('payment-amount').value);
+                const contratoId = document.getElementById('payment-contrato-id').value;
+                const valor = parseFloat(document.getElementById('payment-amount').value);
+                const data = document.getElementById('payment-date').value;
+                const metodo = document.getElementById('payment-method').value;
                 
-                if (!docId || isNaN(amount) || amount <= 0) return;
-                const financialDoc = dbState.financeiro.find(item => item.id === docId);
-                if (!financialDoc) return;
-
-                const newPaid = (parseFloat(financialDoc.pago) || 0) + amount;
-                const total = parseFloat(financialDoc.total) || 0;
-                const newStatus = newPaid >= total ? 'Pago' : 'Pago Parcialmente';
+                if (!contratoId || isNaN(valor) || valor <= 0 || !data) {
+                    alert("Por favor, preencha todos os campos corretamente.");
+                    return;
+                }
 
                 try {
-                    const docRef = doc(db, `users/${userId}/financeiro/${docId}`);
-                    await updateDoc(docRef, { pago: newPaid, status: newStatus });
-                    paymentModal.classList.add('hidden');
-                    paymentModal.classList.remove('flex');
-                    paymentForm.reset();
-                } catch (error) { console.error("Erro ao atualizar pagamento:", error); }
+                    // Salva um NOVO documento de pagamento
+                    await handleFormSubmit('financeiro', {
+                        contratoId: contratoId,
+                        valor: valor,
+                        data: data,
+                        metodo: metodo
+                    }, addPaymentForm);
+
+                    addPaymentModal.classList.add('hidden');
+                    addPaymentModal.classList.remove('flex');
+                } catch (error) { 
+                    console.error("Erro ao adicionar pagamento:", error); 
+                }
             });
+            // ######################################################
+
 
             // --- LISTENERS EM TEMPO REAL (ONSNAPSHOT) ---
             function setupRealtimeListeners() {
                 if (!userId) return;
                 unsubscribeListeners.forEach(unsub => unsub());
                 unsubscribeListeners = [];
-                // ######################################################
-                // ALTERAÇÃO AQUI: "contratos" adicionado aos listeners
-                // ######################################################
                 const collections = ['eventos', 'clientes', 'contratos', 'fotografos', 'financeiro', 'custos'];
-                // ######################################################
                 collections.forEach(col => {
                     const collectionPath = `users/${userId}/${col}`;
                     const unsub = onSnapshot(collection(db, collectionPath), (querySnapshot) => {
@@ -596,8 +610,13 @@
                         if (col === 'eventos') {
                              dbState.eventos.sort((a, b) => new Date(b.data) - new Date(a.data));
                         }
-                        // Você pode adicionar uma regra de ordenação para contratos aqui se quiser
-                        // if (col === 'contratos') { ... }
+                        // ######################################################
+                        // ALTERAÇÃO AQUI: Ordena o financeiro por data
+                        // ######################################################
+                        if (col === 'financeiro') {
+                            dbState.financeiro.sort((a, b) => new Date(b.data) - new Date(a.data));
+                        }
+                        // ######################################################
                         renderAll();
                     });
                     unsubscribeListeners.push(unsub);
@@ -605,13 +624,9 @@
             }
 
             function clearAllData() {
-                // ######################################################
-                // ALTERAÇÃO AQUI: "contratos" adicionado ao clear
-                // ######################################################
                 dbState = { 
                     eventos: [], clientes: [], contratos: [], fotografos: [], financeiro: [], custos: []
                 };
-                // ######################################################
                 selectedEventIdForEntrega = null;
                 document.getElementById('entrega-management-area').classList.add('hidden');
                 document.getElementById('entrega-default-view').classList.remove('hidden');
@@ -620,25 +635,22 @@
             function renderAll() {
                 renderEventos();
                 renderClientes();
-                // ######################################################
-                // ALTERAÇÃO AQUI: Chamada da nova função render
-                // ######################################################
                 renderContratos();
-                // ######################################################
                 renderFotografos();
-                renderFinanceiro();
+                renderFinanceiro(); // <- Esta função foi reescrita
                 renderCustos();
                 updateDashboard();
-                populateClienteSelect();
                 populateEventoSelect();
                 populateEventoClienteSelect(); 
                 populateEntregaEventoSelect();
-                // ######################################################
-                // ALTERAÇÃO AQUI: Novas funções para popular selects de contrato
-                // ######################################################
                 populateContratoClienteSelect();
-                updateContratoEventoSelect(); // Chama para inicializar (vazio)
+                updateContratoEventoSelect();
+                
                 // ######################################################
+                // ALTERAÇÃO AQUI: Remove chamada para populateClienteSelect (não existe mais)
+                // ######################################################
+                // populateClienteSelect(); // <- Removido
+
                 
                 if (selectedEventIdForEntrega) {
                     document.getElementById('entrega-default-view').classList.add('hidden');
@@ -656,18 +668,28 @@
             // --- RENDERIZAÇÃO DAS SEÇÕES ---
 
             function updateDashboard() {
-                // ... (sem alterações no dashboard por enquanto) ...
                 document.getElementById('total-eventos').innerText = dbState.eventos.length;
                 document.getElementById('total-clientes').innerText = dbState.clientes.length;
                 
-                const clienteIds = dbState.clientes.map(a => a.id);
-                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
-
-                const totalPago = financeiroFiltrado.reduce((acc, item) => acc + (parseFloat(item.pago) || 0), 0);
+                // ######################################################
+                // ALTERAÇÃO AQUI: Dashboard agora lê do 'financeiro' e 'contratos'
+                // ######################################################
+                
+                // Calcula o total pago de todos os pagamentos
+                const totalPago = dbState.financeiro.reduce((acc, item) => acc + (parseFloat(item.valor) || 0), 0);
                 document.getElementById('total-pago').innerText = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
 
-                const totalPendente = financeiroFiltrado.reduce((acc, item) => acc + ((parseFloat(item.total) || 0) - (parseFloat(item.pago) || 0)), 0);
+                // Calcula o total pendente de todos os contratos assinados
+                let totalContratado = 0;
+                dbState.contratos.forEach(contrato => {
+                    if (contrato.status === 'Assinado' || contrato.status === 'Concluído') {
+                        totalContratado += (parseFloat(contrato.valorTotal) || 0);
+                    }
+                });
+                
+                const totalPendente = totalContratado - totalPago;
                 document.getElementById('total-pendente').innerText = `R$ ${totalPendente.toFixed(2).replace('.', ',')}`;
+                // ######################################################
 
                 const totalCustos = dbState.custos.reduce((acc, item) => acc + (parseFloat(item.valor) || 0), 0);
                  document.getElementById('total-custos').innerText = `R$ ${totalCustos.toFixed(2).replace('.', ',')}`;
@@ -688,7 +710,6 @@
             }
 
             function renderEventos() {
-                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-eventos');
                 lista.innerHTML = dbState.eventos.map(evento => {
                     const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
@@ -722,7 +743,6 @@
 
 
             function renderClientes() {
-                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-clientes');
                 lista.innerHTML = dbState.clientes.length === 0 
                     ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>'
@@ -740,7 +760,7 @@
             }
 
             // ######################################################
-            // NOVA FUNÇÃO: Renderiza a lista de Contratos
+            // ALTERAÇÃO AQUI: renderContratos agora calcula totais e adiciona botão
             // ######################################################
             function renderContratos() {
                 const lista = document.getElementById('lista-contratos');
@@ -749,7 +769,13 @@
                     : dbState.contratos.map(contrato => {
                         const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
                         const evento = dbState.eventos.find(e => e.id === contrato.eventoId) || { nome: 'Evento não encontrado' };
-                        const valor = parseFloat(contrato.valorTotal || 0).toFixed(2).replace('.', ',');
+                        
+                        // Calcula totais
+                        const valorTotal = parseFloat(contrato.valorTotal || 0);
+                        const totalPago = dbState.financeiro
+                            .filter(p => p.contratoId === contrato.id)
+                            .reduce((acc, p) => acc + (parseFloat(p.valor) || 0), 0);
+                        const restante = valorTotal - totalPago;
 
                         let statusClass = 'bg-gray-100 text-gray-800';
                         switch (contrato.status) {
@@ -763,14 +789,27 @@
                         const linkButton = contrato.link 
                             ? `<a href="${contrato.link}" target="_blank" class="text-blue-500 hover:text-blue-700" title="Ver Documento"><i data-lucide="external-link" class="w-5 h-5"></i></a>`
                             : `<span class="text-gray-300" title="Sem documento"><i data-lucide="external-link" class="w-5 h-5"></i></span>`;
+                        
+                        // Define cor do valor restante
+                        let restanteClass = 'text-gray-500';
+                        if (restante > 0) restanteClass = 'text-red-600';
+                        if (restante <= 0 && valorTotal > 0) restanteClass = 'text-green-600';
+
 
                         return `
                         <tr class="border-b hover:bg-gray-50">
                             <td class="p-4">${cliente.nome}</td>
                             <td class="p-4">${evento.nome}</td>
-                            <td class="p-4">R$ ${valor}</td>
+                            <td class="p-4">
+                                <div class="text-sm">Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}</div>
+                                <div class="text-sm text-green-600">Pago: R$ ${totalPago.toFixed(2).replace('.', ',')}</div>
+                                <div class="text-sm font-medium ${restanteClass}">Restante: R$ ${restante.toFixed(2).replace('.', ',')}</div>
+                            </td>
                             <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">${contrato.status}</span></td>
                             <td class="p-4 flex items-center gap-3">
+                                <button onclick="window.app.openAddPaymentModal('${contrato.id}')" class="text-green-500 hover:text-green-700" title="Adicionar Pagamento">
+                                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                </button>
                                 ${linkButton}
                                 <button onclick="window.app.deleteItem('contratos', '${contrato.id}')" class="text-red-500 hover:text-red-700" title="Excluir Contrato"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             </td>
@@ -780,7 +819,6 @@
             // ######################################################
 
             function renderFotografos() {
-                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-fotografos');
                  lista.innerHTML = dbState.fotografos.length === 0 
                     ? '<tr><td colspan="3" class="p-4 text-center text-gray-500">Nenhum fotógrafo cadastrado.</td></tr>'
@@ -791,37 +829,41 @@
                         </tr>`).join('');
             }
 
+            // ######################################################
+            // ALTERAÇÃO AQUI: renderFinanceiro agora é um extrato
+            // ######################################################
             function renderFinanceiro() {
-                // ... (sem alterações nesta função, ainda está ligada ao CLIENTE) ...
                 const lista = document.getElementById('lista-financeiro');
-                const clienteIds = dbState.clientes.map(a => a.id);
-                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
+                
+                lista.innerHTML = dbState.financeiro.length === 0 
+                    ? '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum pagamento registrado.</td></tr>'
+                    : dbState.financeiro.map(pagamento => {
+                        
+                        const contrato = dbState.contratos.find(c => c.id === pagamento.contratoId) || {};
+                        const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
+                        const evento = dbState.eventos.find(e => e.id === contrato.eventoId) || { nome: 'Contrato não encontrado' };
+                        
+                        const dataFormatada = pagamento.data ? new Date(pagamento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Sem data';
+                        const valorFormatado = (parseFloat(pagamento.valor) || 0).toFixed(2).replace('.', ',');
 
-                lista.innerHTML = financeiroFiltrado.length === 0 
-                    ? '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum lançamento financeiro.</td></tr>'
-                    : financeiroFiltrado.map(item => {
-                        const cliente = dbState.clientes.find(a => a.id === item.clienteId);
-                        if (!cliente) return ''; 
-
-                        const statusClass = item.status === 'Pago' ? 'bg-green-100 text-green-800' : (item.status === 'Pendente' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800');
-                        const total = parseFloat(item.total) || 0;
-                        const pago = parseFloat(item.pago) || 0;
-                        const restante = total - pago;
-                        return `<tr class="border-b hover:bg-gray-50">
+                        return `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4">${dataFormatada}</td>
                             <td class="p-4">${cliente.nome}</td>
-                            <td class="p-4">R$ ${total.toFixed(2).replace('.', ',')}</td>
-                            <td class="p-4">R$ ${pago.toFixed(2).replace('.', ',')}</td>
-                            <td class="p-4 font-medium ${restante > 0 ? 'text-red-600' : 'text-green-600'}">R$ ${restante.toFixed(2).replace('.', ',')}</td>
-                            <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">${item.status}</span></td>
-                            <td class="p-4 flex items-center gap-2">
-                                <button onclick="window.app.openPaymentModal('${item.id}')" class="text-green-500 hover:text-green-700" title="Adicionar Pagamento"><i data-lucide="plus-circle" class="w-5 h-5"></i></button>
-                                <button onclick="window.app.deleteItem('financeiro', '${item.id}')" class="text-red-500 hover:text-red-700" title="Excluir Lançamento"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                            </td></tr>`;
+                            <td class="p-4">${evento.nome}</td>
+                            <td class="p-4"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">${pagamento.metodo || 'N/D'}</span></td>
+                            <td class="p-4 font-medium text-green-600">R$ ${valorFormatado}</td>
+                            <td class="p-4">
+                                <button onclick="window.app.deleteItem('financeiro', '${pagamento.id}')" class="text-red-500 hover:text-red-700" title="Excluir Pagamento">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </td>
+                        </tr>`;
                     }).join('');
             }
+            // ######################################################
             
             function renderCustos() {
-                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-custos');
                 lista.innerHTML = dbState.custos.length === 0
                     ? '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum custo cadastrado.</td></tr>'
@@ -1038,13 +1080,9 @@
                 try {
                     await addDoc(collection(db, `users/${userId}/${collectionName}`), data);
                     formElement.reset();
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Reseta o select de eventos do contrato
-                    // ######################################################
                     if (formElement.id === 'form-contrato') {
-                        updateContratoEventoSelect(null); // Limpa o select de eventos
+                        updateContratoEventoSelect(null);
                     }
-                    // ######################################################
                 } catch (error) { console.error("Erro ao adicionar documento: ", error); }
             }
             
@@ -1076,9 +1114,6 @@
                 }, this); 
             });
 
-            // ######################################################
-            // NOVO FORM SUBMIT: Para "form-contrato"
-            // ######################################################
             document.getElementById('form-contrato').addEventListener('submit', function(e) {
                 e.preventDefault();
                 handleFormSubmit('contratos', {
@@ -1090,11 +1125,13 @@
                     formaPagamento: this.elements['contrato-forma-pagamento'].value
                 }, this);
             });
-            // ######################################################
 
             document.getElementById('form-fotografo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('fotografos', { nome: this.elements['fotografo-nome'].value, contato: this.elements['fotografo-contato'].value }, this); });
             
-            document.getElementById('form-financeiro').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('financeiro', { clienteId: this.elements['financeiro-cliente'].value, total: parseFloat(this.elements['financeiro-valor-total'].value), pago: parseFloat(this.elements['financeiro-valor-pago'].value), status: this.elements['financeiro-status'].value }, this); });
+            // ######################################################
+            // ALTERAÇÃO AQUI: Listener do 'form-financeiro' removido
+            // ######################################################
+            // document.getElementById('form-financeiro').addEventListener('submit', ... ); // <- REMOVIDO
             
             document.getElementById('form-custo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('custos', { descricao: this.elements['custo-descricao'].value, valor: parseFloat(this.elements['custo-valor'].value), eventoId: this.elements['custo-evento'].value }, this); });
             
@@ -1111,12 +1148,10 @@
                 select.value = selectedValue;
             }
 
-            function populateClienteSelect() {
-                populateSelectWithOptions('financeiro-cliente', {
-                    header: '<option value="">Selecione o Cliente</option>', 
-                    data: dbState.clientes
-                });
-            }
+            // ######################################################
+            // ALTERAÇÃO AQUI: 'populateClienteSelect' removida
+            // ######################################################
+            // function populateClienteSelect() { ... } // <- REMOVIDO
             
             function populateEventoClienteSelect() {
                 populateSelectWithOptions('evento-cliente', {
@@ -1129,9 +1164,6 @@
                 populateSelectWithOptions('custo-evento', { header: '<option value="">Selecione o Evento</option>', data: dbState.eventos });
             }
 
-            // ######################################################
-            // NOVAS FUNÇÕES: Para popular os selects de Contrato
-            // ######################################################
             function populateContratoClienteSelect() {
                 populateSelectWithOptions('contrato-cliente', {
                     header: '<option value="">Selecione o Cliente</option>', 
@@ -1139,7 +1171,6 @@
                 });
             }
 
-            // Atualiza o select de eventos com base no cliente selecionado
             function updateContratoEventoSelect(clienteId) {
                 let eventosFiltrados = [];
                 let header = '<option value="">Selecione o Evento (escolha o cliente primeiro)</option>';
@@ -1159,33 +1190,38 @@
                 });
             }
 
-            // Listener para filtrar o select de eventos
             document.getElementById('contrato-cliente').addEventListener('change', (e) => {
                 updateContratoEventoSelect(e.target.value);
             });
-            // ######################################################
 
             // --- FUNÇÕES GLOBAIS ---
             window.app = {
-                openPaymentModal: (docId) => {
-                    document.getElementById('payment-doc-id').value = docId;
-                    paymentModal.classList.remove('hidden');
-                    paymentModal.classList.add('flex');
+                // ######################################################
+                // ALTERAÇÃO AQUI: 'openPaymentModal' agora é 'openAddPaymentModal'
+                // ######################################################
+                openAddPaymentModal: (contratoId) => {
+                    document.getElementById('payment-contrato-id').value = contratoId;
+                    // Define a data de hoje como padrão
+                    document.getElementById('payment-date').valueAsDate = new Date();
+                    addPaymentModal.classList.remove('hidden');
+                    addPaymentModal.classList.add('flex');
                     document.getElementById('payment-amount').focus();
                 },
+                // ######################################################
+
                 deleteItem: async (collectionName, id) => {
                     if (!userId) return;
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Alerta sobre deletar contratos
-                    // ######################################################
+                    
                     let message = `Tem certeza que deseja excluir este item?`;
                     if (collectionName === 'clientes' || collectionName === 'eventos') {
                         message += `\n\nATENÇÃO: Isso NÃO excluirá contratos, eventos ou pagamentos associados.`;
                     }
                     if (collectionName === 'contratos') {
-                        message += `\n\nATENÇÃO: Isso NÃO excluirá os pagamentos já feitos neste contrato (na seção Financeiro).`;
+                        message += `\n\nATENÇÃO: Isso NÃO excluirá os pagamentos já feitos (no Histórico de Pagamentos).`;
                     }
-                    // ######################################################
+                    if (collectionName === 'financeiro') {
+                        message = `Tem certeza que deseja excluir este PAGAMENTO? Esta ação não pode ser desfeita.`;
+                    }
                     
                     if (confirm(message)) {
                         try {
@@ -1209,14 +1245,10 @@
                         document.getElementById('entrega-management-area').classList.add('hidden');
                         renderEntregasAtrasadas();
                     }
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Reseta o filtro de evento do contrato
-                    // ######################################################
                     if (sectionId === 'contratos') {
                         updateContratoEventoSelect(null);
                         document.getElementById('form-contrato').reset();
                     }
-                    // ######################################################
                 },
                 
                 viewEntregaFromAtraso: (eventId) => {
