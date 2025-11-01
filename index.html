@@ -87,12 +87,19 @@
                 <a href="#" onclick="window.app.showSection('dashboard')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link bg-gray-700">
                     <i data-lucide="layout-dashboard" class="inline-block w-5 h-5 mr-2"></i> Dashboard
                 </a>
-                <a href="#" onclick="window.app.showSection('eventos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
-                    <i data-lucide="calendar-days" class="inline-block w-5 h-5 mr-2"></i> Eventos
-                </a>
                 <a href="#" onclick="window.app.showSection('clientes')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="contact" class="inline-block w-5 h-5 mr-2"></i> Clientes
                 </a>
+                <a href="#" onclick="window.app.showSection('eventos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="calendar-days" class="inline-block w-5 h-5 mr-2"></i> Eventos
+                </a>
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Novo item de menu "Contratos" -->
+                <!-- ###################################################### -->
+                <a href="#" onclick="window.app.showSection('contratos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="file-text" class="inline-block w-5 h-5 mr-2"></i> Contratos
+                </a>
+                <!-- ###################################################### -->
                 <a href="#" onclick="window.app.showSection('entrega')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="package-check" class="inline-block w-5 h-5 mr-2"></i> Entrega
                 </a>
@@ -187,39 +194,6 @@
                     </div>
                 </div>
 
-                <div id="section-eventos" class="content-section hidden">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gerenciar Eventos</h1>
-                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Evento</h2>
-                        <form id="form-evento">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <select id="evento-cliente" class="w-full p-2 border rounded" required>
-                                    <option value="">Selecione o Cliente</option>
-                                </select>
-                                <input type="text" id="evento-nome" placeholder="Título do Evento (Ex: Casamento Joana e Pedro)" class="w-full p-2 border rounded" required>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                <input type="date" id="evento-data" class="w-full p-2 border rounded" required>
-                                <input type="text" id="evento-local" placeholder="Local do Evento" class="w-full p-2 border rounded">
-                                <select id="evento-tipo" class="w-full p-2 border rounded" required>
-                                    <option value="">Tipo de Evento</option>
-                                    <option value="Casamento">Casamento</option>
-                                    <option value="Infantil">Infantil</option>
-                                    <option value="Corporativo">Corporativo</option>
-                                    <option value="Ensaio">Ensaio</option>
-                                    <option value="Evento Adulto">Evento Adulto</option>
-                                </select>
-                            </div>
-                            <textarea id="evento-descricao" placeholder="Descrição/Detalhes do Evento (Horários, observações, etc...)" class="w-full p-2 border rounded mt-4" rows="3"></textarea>
-                            <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Adicionar Evento</button>
-                        </form>
-                    </div>
-                    <div id="lista-eventos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Os cards de evento aparecerão aqui -->
-                    </div>
-                </div>
-
-
                 <div id="section-clientes" class="content-section hidden">
                      <h1 class="text-3xl font-bold text-gray-800 mb-6">Clientes</h1>
                      <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -252,40 +226,119 @@
                         </table>
                     </div>
                 </div>
-                
-                
+
+                <div id="section-eventos" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gerenciar Eventos</h1>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Evento</h2>
+                        <form id="form-evento">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <select id="evento-cliente" class="w-full p-2 border rounded" required>
+                                    <option value="">Selecione o Cliente</option>
+                                </select>
+                                <input type="text" id="evento-nome" placeholder="Título do Evento (Ex: Casamento Joana e Pedro)" class="w-full p-2 border rounded" required>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <input type="date" id="evento-data" class="w-full p-2 border rounded" required>
+                                <input type="text" id="evento-local" placeholder="Local do Evento" class="w-full p-2 border rounded">
+                                <select id="evento-tipo" class="w-full p-2 border rounded" required>
+                                    <option value="">Tipo de Evento</option>
+                                    <option value="Casamento">Casamento</option>
+                                    <option value="Infantil">Infantil</option>
+                                    <option value="Corporativo">Corporativo</option>
+                                    <option value="Ensaio">Ensaio</option>
+                                    <option value="Evento Adulto">Evento Adulto</option>
+                                </select>
+                            </div>
+                            <textarea id="evento-descricao" placeholder="Descrição/Detalhes do Evento (Horários, observações, etc...)" class="w-full p-2 border rounded mt-4" rows="3"></textarea>
+                            <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Adicionar Evento</button>
+                        </form>
+                    </div>
+                    <div id="lista-eventos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Os cards de evento aparecerão aqui -->
+                    </div>
+                </div>
+
                 <!-- ###################################################### -->
-                <!-- ALTERAÇÃO AQUI: Seção "Entrega" com nova estrutura -->
+                <!-- ALTERAÇÃO AQUI: Nova Seção "Contratos" -->
                 <!-- ###################################################### -->
+                <div id="section-contratos" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestão de Contratos</h1>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Contrato</h2>
+                        <form id="form-contrato">
+                            <!-- Linha 1: Cliente e Evento (filtrado) -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <select id="contrato-cliente" class="w-full p-2 border rounded" required>
+                                    <option value="">Selecione o Cliente</option>
+                                </select>
+                                <select id="contrato-evento" class="w-full p-2 border rounded" required>
+                                    <option value="">Selecione o Evento (escolha o cliente primeiro)</option>
+                                </select>
+                            </div>
+                            <!-- Linha 2: Valor e Status -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <input type="number" step="0.01" id="contrato-valor-total" placeholder="Valor Total (R$)" class="w-full p-2 border rounded" required>
+                                <select id="contrato-status" class="w-full p-2 border rounded" required>
+                                    <option value="Proposta">Proposta</option>
+                                    <option value="Enviado">Enviado</option>
+                                    <option value="Assinado">Assinado</option>
+                                    <option value="Concluído">Concluído</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <!-- Linha 3: Link e Forma de Pagamento -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <input type="url" id="contrato-link" placeholder="Link para o PDF (Google Drive, etc.)" class="w-full p-2 border rounded">
+                                <textarea id="contrato-forma-pagamento" placeholder="Forma de Pagamento (Ex: Sinal R$1000 + 3x R$500)" class="w-full p-2 border rounded" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition">Adicionar Contrato</button>
+                        </form>
+                    </div>
+                    <!-- Tabela de Contratos -->
+                    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                        <table class="w-full min-w-max">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Evento</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Total</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-contratos">
+                               <!-- Linhas de contrato serão inseridas aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- ###################################################### -->
+
+
                 <div id="section-entrega" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestão de Entregas</h1>
                     
-                    <!-- O seletor de filtro -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                         <div class="mb-4">
                             <label for="entrega-evento-select" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Evento Específico</label>
                             <select id="entrega-evento-select" class="w-full p-2 border rounded">
-                                <!-- Opção de limpar o filtro e ver os atrasos -->
                                 <option value="">Ver todos os atrasos (Padrão)</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Visão de FILTRO (os 3 cards de um evento) -->
                     <div id="entrega-management-area" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Os cards de entrega (Prévia, Mídia, Álbum) serão inseridos aqui -->
                     </div>
 
-                    <!-- Visão PADRÃO (lista de atrasos) -->
                     <div id="entrega-default-view">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">Entregas Atrasadas ou Vencendo Hoje</h2>
-                        <!-- Container para a lista de atrasos -->
                         <div id="entrega-atrasos-container" class="space-y-4">
                             <!-- A lista de atrasos será inserida aqui pelo JS -->
                         </div>
                     </div>
                 </div>
-                <!-- ###################################################### -->
 
 
                 <div id="section-fotografos" class="content-section hidden">
@@ -413,13 +466,18 @@
             const db = getFirestore(app);
             
             let userId = null;
+            // ######################################################
+            // ALTERAÇÃO AQUI: "contratos" adicionado ao dbState
+            // ######################################################
             let dbState = { 
                 eventos: [], 
                 clientes: [], 
+                contratos: [], // <- NOVO
                 fotografos: [], 
                 financeiro: [], 
                 custos: []
             };
+            // ######################################################
             
             let unsubscribeListeners = [];
             let selectedEventIdForEntrega = null;
@@ -449,7 +507,7 @@
                 }
             });
 
-            // --- Lógica de Login e Registro ---
+            // --- Lógica de Login e Registro (sem alterações) ---
             document.getElementById('login-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('email').value;
@@ -489,7 +547,7 @@
 
             document.getElementById('logout-button').addEventListener('click', () => signOut(auth));
 
-            // --- Lógica do Modal de Pagamento ---
+            // --- Lógica do Modal de Pagamento (sem alterações) ---
             const paymentModal = document.getElementById('payment-modal');
             const paymentForm = document.getElementById('payment-form');
             document.getElementById('cancel-payment-button').addEventListener('click', () => {
@@ -523,7 +581,11 @@
                 if (!userId) return;
                 unsubscribeListeners.forEach(unsub => unsub());
                 unsubscribeListeners = [];
-                const collections = ['eventos', 'clientes', 'fotografos', 'financeiro', 'custos'];
+                // ######################################################
+                // ALTERAÇÃO AQUI: "contratos" adicionado aos listeners
+                // ######################################################
+                const collections = ['eventos', 'clientes', 'contratos', 'fotografos', 'financeiro', 'custos'];
+                // ######################################################
                 collections.forEach(col => {
                     const collectionPath = `users/${userId}/${col}`;
                     const unsub = onSnapshot(collection(db, collectionPath), (querySnapshot) => {
@@ -534,6 +596,8 @@
                         if (col === 'eventos') {
                              dbState.eventos.sort((a, b) => new Date(b.data) - new Date(a.data));
                         }
+                        // Você pode adicionar uma regra de ordenação para contratos aqui se quiser
+                        // if (col === 'contratos') { ... }
                         renderAll();
                     });
                     unsubscribeListeners.push(unsub);
@@ -541,17 +605,26 @@
             }
 
             function clearAllData() {
+                // ######################################################
+                // ALTERAÇÃO AQUI: "contratos" adicionado ao clear
+                // ######################################################
                 dbState = { 
-                    eventos: [], clientes: [], fotografos: [], financeiro: [], custos: []
+                    eventos: [], clientes: [], contratos: [], fotografos: [], financeiro: [], custos: []
                 };
+                // ######################################################
                 selectedEventIdForEntrega = null;
                 document.getElementById('entrega-management-area').classList.add('hidden');
-                document.getElementById('entrega-default-view').classList.remove('hidden'); // Garante que a view padrão apareça
+                document.getElementById('entrega-default-view').classList.remove('hidden');
             }
 
             function renderAll() {
                 renderEventos();
                 renderClientes();
+                // ######################################################
+                // ALTERAÇÃO AQUI: Chamada da nova função render
+                // ######################################################
+                renderContratos();
+                // ######################################################
                 renderFotografos();
                 renderFinanceiro();
                 renderCustos();
@@ -560,23 +633,22 @@
                 populateEventoSelect();
                 populateEventoClienteSelect(); 
                 populateEntregaEventoSelect();
+                // ######################################################
+                // ALTERAÇÃO AQUI: Novas funções para popular selects de contrato
+                // ######################################################
+                populateContratoClienteSelect();
+                updateContratoEventoSelect(); // Chama para inicializar (vazio)
+                // ######################################################
                 
-                // ######################################################
-                // ALTERAÇÃO AQUI: Lógica de renderização de entrega
-                // ######################################################
-                // Decide qual view de "Entrega" mostrar
                 if (selectedEventIdForEntrega) {
-                    // Se um evento está selecionado, mostra os 3 cards dele
                     document.getElementById('entrega-default-view').classList.add('hidden');
                     document.getElementById('entrega-management-area').classList.remove('hidden');
                     renderEntregaCards(selectedEventIdForEntrega);
                 } else {
-                    // Se nenhum evento selecionado, mostra a lista de atrasos
                     document.getElementById('entrega-default-view').classList.remove('hidden');
                     document.getElementById('entrega-management-area').classList.add('hidden');
-                    renderEntregasAtrasadas(); // <- Nova função
+                    renderEntregasAtrasadas();
                 }
-                // ######################################################
 
                 lucide.createIcons();
             }
@@ -584,6 +656,7 @@
             // --- RENDERIZAÇÃO DAS SEÇÕES ---
 
             function updateDashboard() {
+                // ... (sem alterações no dashboard por enquanto) ...
                 document.getElementById('total-eventos').innerText = dbState.eventos.length;
                 document.getElementById('total-clientes').innerText = dbState.clientes.length;
                 
@@ -615,6 +688,7 @@
             }
 
             function renderEventos() {
+                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-eventos');
                 lista.innerHTML = dbState.eventos.map(evento => {
                     const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
@@ -648,6 +722,7 @@
 
 
             function renderClientes() {
+                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-clientes');
                 lista.innerHTML = dbState.clientes.length === 0 
                     ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>'
@@ -664,7 +739,48 @@
                     }).join('');
             }
 
+            // ######################################################
+            // NOVA FUNÇÃO: Renderiza a lista de Contratos
+            // ######################################################
+            function renderContratos() {
+                const lista = document.getElementById('lista-contratos');
+                lista.innerHTML = dbState.contratos.length === 0
+                    ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum contrato cadastrado.</td></tr>'
+                    : dbState.contratos.map(contrato => {
+                        const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
+                        const evento = dbState.eventos.find(e => e.id === contrato.eventoId) || { nome: 'Evento não encontrado' };
+                        const valor = parseFloat(contrato.valorTotal || 0).toFixed(2).replace('.', ',');
+
+                        let statusClass = 'bg-gray-100 text-gray-800';
+                        switch (contrato.status) {
+                            case 'Proposta': statusClass = 'bg-blue-100 text-blue-800'; break;
+                            case 'Enviado': statusClass = 'bg-yellow-100 text-yellow-800'; break;
+                            case 'Assinado': statusClass = 'bg-green-100 text-green-800'; break;
+                            case 'Concluído': statusClass = 'bg-emerald-100 text-emerald-800'; break;
+                            case 'Cancelado': statusClass = 'bg-red-100 text-red-800'; break;
+                        }
+
+                        const linkButton = contrato.link 
+                            ? `<a href="${contrato.link}" target="_blank" class="text-blue-500 hover:text-blue-700" title="Ver Documento"><i data-lucide="external-link" class="w-5 h-5"></i></a>`
+                            : `<span class="text-gray-300" title="Sem documento"><i data-lucide="external-link" class="w-5 h-5"></i></span>`;
+
+                        return `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4">${cliente.nome}</td>
+                            <td class="p-4">${evento.nome}</td>
+                            <td class="p-4">R$ ${valor}</td>
+                            <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">${contrato.status}</span></td>
+                            <td class="p-4 flex items-center gap-3">
+                                ${linkButton}
+                                <button onclick="window.app.deleteItem('contratos', '${contrato.id}')" class="text-red-500 hover:text-red-700" title="Excluir Contrato"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+            }
+            // ######################################################
+
             function renderFotografos() {
+                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-fotografos');
                  lista.innerHTML = dbState.fotografos.length === 0 
                     ? '<tr><td colspan="3" class="p-4 text-center text-gray-500">Nenhum fotógrafo cadastrado.</td></tr>'
@@ -676,6 +792,7 @@
             }
 
             function renderFinanceiro() {
+                // ... (sem alterações nesta função, ainda está ligada ao CLIENTE) ...
                 const lista = document.getElementById('lista-financeiro');
                 const clienteIds = dbState.clientes.map(a => a.id);
                 const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
@@ -704,6 +821,7 @@
             }
             
             function renderCustos() {
+                // ... (sem alterações nesta função) ...
                 const lista = document.getElementById('lista-custos');
                 lista.innerHTML = dbState.custos.length === 0
                     ? '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum custo cadastrado.</td></tr>'
@@ -719,13 +837,10 @@
                     }).join('');
             }
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: Lógica da Seção "Entrega" atualizada
-            // ######################################################
+            // --- LÓGICA DA SEÇÃO DE ENTREGA (sem alterações) ---
 
             function populateEntregaEventoSelect() {
                 const select = document.getElementById('entrega-evento-select');
-                // Texto do option padrão atualizado
                 select.innerHTML = '<option value="">Ver todos os atrasos (Padrão)</option>';
                 dbState.eventos.forEach(evento => {
                     const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
@@ -744,12 +859,10 @@
                 const defaultView = document.getElementById('entrega-default-view');
 
                 if (selectedEventIdForEntrega) {
-                    // Se um evento é selecionado, mostra a área de gerenciamento dele
                     defaultView.classList.add('hidden');
                     managementArea.classList.remove('hidden');
                     renderEntregaCards(selectedEventIdForEntrega);
                 } else {
-                    // Se o filtro é limpo, mostra a view padrão de atrasos
                     defaultView.classList.remove('hidden');
                     managementArea.classList.add('hidden');
                     managementArea.innerHTML = '';
@@ -757,7 +870,6 @@
                 }
             });
 
-            // Função de cálculo ATUALIZADA para retornar diffDays
             function getEntregaInfo(evento, tipo) {
                 const dataEventoStr = evento.data;
                 const hoje = new Date();
@@ -797,7 +909,7 @@
                     return { 
                         title, status: 'entregue', text: `Entregue em ${dataEntrega}`, 
                         deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-green-100', 
-                        textColor: 'text-green-800', diffDays: 99998 // Já entregue, joga pro fim da lista
+                        textColor: 'text-green-800', diffDays: 99998
                     };
                 }
 
@@ -805,24 +917,23 @@
                     return { 
                         title, status: 'atrasado', text: `${Math.abs(diffDays)} dia(s) atrasado`, 
                         deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-red-100', 
-                        textColor: 'text-red-800', diffDays: diffDays // Número negativo (mais atrasado = menor)
+                        textColor: 'text-red-800', diffDays: diffDays
                     };
                 }
                 if (diffDays === 0) {
                     return { 
                         title, status: 'hoje', text: 'Vence Hoje', 
                         deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-yellow-100', 
-                        textColor: 'text-yellow-800', diffDays: 0 // Vence hoje
+                        textColor: 'text-yellow-800', diffDays: 0
                     };
                 }
                 return { 
                     title, status: 'pendente', text: `Vence em ${diffDays} dia(s)`, 
                     deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-blue-100', 
-                    textColor: 'text-blue-800', diffDays: diffDays // Pendente
+                    textColor: 'text-blue-800', diffDays: diffDays
                 };
             }
 
-            // Renderiza os 3 cards de um evento específico (visão de filtro)
             function renderEntregaCards(eventId) {
                 const evento = dbState.eventos.find(e => e.id === eventId);
                 const container = document.getElementById('entrega-management-area');
@@ -861,19 +972,14 @@
                 lucide.createIcons();
             }
 
-            // ######################################################
-            // NOVA FUNÇÃO: Renderiza a lista de atrasos (visão padrão)
-            // ######################################################
             function renderEntregasAtrasadas() {
                 const container = document.getElementById('entrega-atrasos-container');
                 let atrasos = [];
 
-                // 1. Coleta todos os itens pendentes, atrasados ou vencendo hoje
                 dbState.eventos.forEach(evento => {
                     const tipos = ['previa', 'midia', 'album'];
                     tipos.forEach(tipo => {
                         const info = getEntregaInfo(evento, tipo);
-                        // Adiciona na lista apenas se não estiver pendente (longe) ou já entregue
                         if (info.status === 'atrasado' || info.status === 'hoje') {
                             atrasos.push({
                                 evento: evento,
@@ -883,10 +989,8 @@
                     });
                 });
 
-                // 2. Ordena a lista pelos mais atrasados (menor diffDays)
                 atrasos.sort((a, b) => a.info.diffDays - b.info.diffDays);
 
-                // 3. Renderiza o HTML
                 if (atrasos.length === 0) {
                     container.innerHTML = `
                         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow">
@@ -934,6 +1038,13 @@
                 try {
                     await addDoc(collection(db, `users/${userId}/${collectionName}`), data);
                     formElement.reset();
+                    // ######################################################
+                    // ALTERAÇÃO AQUI: Reseta o select de eventos do contrato
+                    // ######################################################
+                    if (formElement.id === 'form-contrato') {
+                        updateContratoEventoSelect(null); // Limpa o select de eventos
+                    }
+                    // ######################################################
                 } catch (error) { console.error("Erro ao adicionar documento: ", error); }
             }
             
@@ -946,7 +1057,6 @@
                     local: this.elements['evento-local'].value,
                     tipo: this.elements['evento-tipo'].value,
                     descricao: this.elements['evento-descricao'].value,
-                    // Adiciona os campos de status de entrega
                     entrega_previa_status: "Pendente",
                     entrega_midia_status: "Pendente",
                     entrega_album_status: "Pendente",
@@ -965,6 +1075,22 @@
                     documento: this.elements['cliente-documento'].value
                 }, this); 
             });
+
+            // ######################################################
+            // NOVO FORM SUBMIT: Para "form-contrato"
+            // ######################################################
+            document.getElementById('form-contrato').addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleFormSubmit('contratos', {
+                    clienteId: this.elements['contrato-cliente'].value,
+                    eventoId: this.elements['contrato-evento'].value,
+                    valorTotal: parseFloat(this.elements['contrato-valor-total'].value),
+                    status: this.elements['contrato-status'].value,
+                    link: this.elements['contrato-link'].value,
+                    formaPagamento: this.elements['contrato-forma-pagamento'].value
+                }, this);
+            });
+            // ######################################################
 
             document.getElementById('form-fotografo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('fotografos', { nome: this.elements['fotografo-nome'].value, contato: this.elements['fotografo-contato'].value }, this); });
             
@@ -1003,6 +1129,42 @@
                 populateSelectWithOptions('custo-evento', { header: '<option value="">Selecione o Evento</option>', data: dbState.eventos });
             }
 
+            // ######################################################
+            // NOVAS FUNÇÕES: Para popular os selects de Contrato
+            // ######################################################
+            function populateContratoClienteSelect() {
+                populateSelectWithOptions('contrato-cliente', {
+                    header: '<option value="">Selecione o Cliente</option>', 
+                    data: dbState.clientes
+                });
+            }
+
+            // Atualiza o select de eventos com base no cliente selecionado
+            function updateContratoEventoSelect(clienteId) {
+                let eventosFiltrados = [];
+                let header = '<option value="">Selecione o Evento (escolha o cliente primeiro)</option>';
+
+                if (clienteId) {
+                    eventosFiltrados = dbState.eventos.filter(e => e.clienteId === clienteId);
+                    if (eventosFiltrados.length === 0) {
+                        header = '<option value="">Nenhum evento encontrado para este cliente</option>';
+                    } else {
+                        header = '<option value="">Selecione o Evento</option>';
+                    }
+                }
+                
+                populateSelectWithOptions('contrato-evento', {
+                    header: header,
+                    data: eventosFiltrados
+                });
+            }
+
+            // Listener para filtrar o select de eventos
+            document.getElementById('contrato-cliente').addEventListener('change', (e) => {
+                updateContratoEventoSelect(e.target.value);
+            });
+            // ######################################################
+
             // --- FUNÇÕES GLOBAIS ---
             window.app = {
                 openPaymentModal: (docId) => {
@@ -1013,7 +1175,19 @@
                 },
                 deleteItem: async (collectionName, id) => {
                     if (!userId) return;
-                    if (confirm(`Tem certeza que deseja excluir este item?`)) {
+                    // ######################################################
+                    // ALTERAÇÃO AQUI: Alerta sobre deletar contratos
+                    // ######################################################
+                    let message = `Tem certeza que deseja excluir este item?`;
+                    if (collectionName === 'clientes' || collectionName === 'eventos') {
+                        message += `\n\nATENÇÃO: Isso NÃO excluirá contratos, eventos ou pagamentos associados.`;
+                    }
+                    if (collectionName === 'contratos') {
+                        message += `\n\nATENÇÃO: Isso NÃO excluirá os pagamentos já feitos neste contrato (na seção Financeiro).`;
+                    }
+                    // ######################################################
+                    
+                    if (confirm(message)) {
                         try {
                             await deleteDoc(doc(db, `users/${userId}/${collectionName}/${id}`));
                         } catch (error) { console.error("Erro ao deletar documento: ", error); }
@@ -1028,11 +1202,7 @@
                     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-gray-700'));
                     event.currentTarget.classList.add('bg-gray-700');
 
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Lógica de visualização de entrega
-                    // ######################################################
                     if (sectionId === 'entrega') {
-                        // Reseta para a view padrão (atrasos) toda vez que clica na aba
                         selectedEventIdForEntrega = null;
                         document.getElementById('entrega-evento-select').value = '';
                         document.getElementById('entrega-default-view').classList.remove('hidden');
@@ -1040,21 +1210,20 @@
                         renderEntregasAtrasadas();
                     }
                     // ######################################################
+                    // ALTERAÇÃO AQUI: Reseta o filtro de evento do contrato
+                    // ######################################################
+                    if (sectionId === 'contratos') {
+                        updateContratoEventoSelect(null);
+                        document.getElementById('form-contrato').reset();
+                    }
+                    // ######################################################
                 },
                 
-                // ######################################################
-                // NOVA FUNÇÃO: Para navegar da lista de atrasos para o evento
-                // ######################################################
                 viewEntregaFromAtraso: (eventId) => {
-                    // 1. Define o valor do select
                     document.getElementById('entrega-evento-select').value = eventId;
-                    // 2. Atualiza a variável de estado
                     selectedEventIdForEntrega = eventId;
-                    // 3. Esconde a view padrão
                     document.getElementById('entrega-default-view').classList.add('hidden');
-                    // 4. Mostra a view de gerenciamento
                     document.getElementById('entrega-management-area').classList.remove('hidden');
-                    // 5. Renderiza os cards para esse evento
                     renderEntregaCards(eventId);
                 },
 
@@ -1070,7 +1239,6 @@
                             [statusField]: "Entregue",
                             [dataField]: new Date().toISOString()
                         });
-                        // O onSnapshot vai atualizar a UI automaticamente
                     } catch (error) {
                         console.error("Erro ao marcar como entregue: ", error);
                     }
