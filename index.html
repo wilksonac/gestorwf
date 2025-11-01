@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Contratos - Fotografia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="login-overlay" class="fixed inset-0 bg-gray-200 z-50 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <div class="flex items-center justify-center mb-6">
+                <i data-lucide="camera" class="h-10 w-10 text-gray-700"></i>
+                <h1 class="text-2xl font-bold ml-2 text-gray-800">Gestor de Contratos</h1>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="password" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm mb-4 text-center hidden"></div>
+                <div class="flex items-center justify-between gap-4">
+                    <button type="submit" id="login-button" class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors">Entrar</button>
+                    <button type="button" id="register-button" class="w-full bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition-colors">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Pagamento</h2>
+            <form id="payment-form">
+                <input type="hidden" id="payment-doc-id">
+                <div class="mb-4">
+                    <label for="payment-amount" class="block text-sm font-medium text-gray-700 mb-1">Valor do Pagamento (R$)</label>
+                    <input type="number" step="0.01" id="payment-amount" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="cancel-payment-button" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">Salvar Pagamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden h-screen w-full md:flex">
+        <aside id="sidebar" class="sidebar bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0">
+            <a href="#" class="text-white flex items-center space-x-2 px-4">
+                <i data-lucide="camera" class="h-8 w-8"></i>
+                <span class="text-2xl font-extrabold">Gestor de Contratos</span>
+            </a>
+
+            <nav>
+                <a href="#" onclick="window.app.showSection('dashboard')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link bg-gray-700">
+                    <i data-lucide="layout-dashboard" class="inline-block w-5 h-5 mr-2"></i> Dashboard
+                </a>
+                <a href="#" onclick="window.app.showSection('eventos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="calendar-days" class="inline-block w-5 h-5 mr-2"></i> Eventos
+                </a>
+                <a href="#" onclick="window.app.showSection('clientes')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="contact" class="inline-block w-5 h-5 mr-2"></i> Clientes
+                </a>
+                <a href="#" onclick="window.app.showSection('entrega')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="package-check" class="inline-block w-5 h-5 mr-2"></i> Entrega
+                </a>
+                <a href="#" onclick="window.app.showSection('fotografos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="user-square" class="inline-block w-5 h-5 mr-2"></i> Fotógrafos
+                </a>
+                <a href="#" onclick="window.app.showSection('financeiro')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="dollar-sign" class="inline-block w-5 h-5 mr-2"></i> Financeiro
+                </a>
+                <a href="#" onclick="window.app.showSection('custos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="shopping-cart" class="inline-block w-5 h-5 mr-2"></i> Custos
+                </a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="flex justify-between items-center p-4 bg-white border-b">
+                 <button id="mobile-menu-button" class="text-gray-500 focus:outline-none md:hidden">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+                <div class="flex items-center gap-4 ml-auto">
+                    <div id="auth-status" class="text-gray-700 text-sm"></div>
+                    <button id="logout-button" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors">Sair</button>
+                </div>
+            </header>
+            
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-8">
+                
+                <div id="section-dashboard" class="content-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Próximos Eventos</p>
+                                <p id="total-eventos" class="text-3xl font-bold text-gray-800">0</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i data-lucide="calendar" class="h-6 w-6 text-blue-500"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total de Clientes</p>
+                                <p id="total-clientes" class="text-3xl font-bold text-gray-800">0</p>
+                            </div>
+                             <div class="bg-green-100 p-3 rounded-full">
+                                <i data-lucide="users" class="h-6 w-6 text-green-500"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Pago</p>
+                                <p id="total-pago" class="text-3xl font-bold text-gray-800">R$ 0,00</p>
+                            </div>
+                             <div class="bg-emerald-100 p-3 rounded-full">
+                                <i data-lucide="check-circle" class="h-6 w-6 text-emerald-500"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Pagamentos Pendentes</p>
+                                <p id="total-pendente" class="text-3xl font-bold text-gray-800">R$ 0,00</p>
+                            </div>
+                             <div class="bg-red-100 p-3 rounded-full">
+                                <i data-lucide="alert-circle" class="h-6 w-6 text-red-500"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total de Custos</p>
+                                <p id="total-custos" class="text-3xl font-bold text-gray-800">R$ 0,00</p>
+                            </div>
+                             <div class="bg-orange-100 p-3 rounded-full">
+                                <i data-lucide="shopping-cart" class="h-6 w-6 text-orange-500"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Lucro Líquido</p>
+                                <p id="lucro-liquido" class="text-3xl font-bold text-gray-800">R$ 0,00</p>
+                            </div>
+                             <div class="bg-teal-100 p-3 rounded-full">
+                                <i data-lucide="trending-up" class="h-6 w-6 text-teal-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Eventos Recentes</h2>
+                        <div id="dashboard-eventos-recentes">
+                            <p class="text-gray-500">Nenhum evento cadastrado ainda.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="section-eventos" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gerenciar Eventos</h1>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Evento</h2>
+                        <form id="form-evento">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <select id="evento-cliente" class="w-full p-2 border rounded" required>
+                                    <option value="">Selecione o Cliente</option>
+                                </select>
+                                <input type="text" id="evento-nome" placeholder="Título do Evento (Ex: Casamento Joana e Pedro)" class="w-full p-2 border rounded" required>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <input type="date" id="evento-data" class="w-full p-2 border rounded" required>
+                                <input type="text" id="evento-local" placeholder="Local do Evento" class="w-full p-2 border rounded">
+                                <select id="evento-tipo" class="w-full p-2 border rounded" required>
+                                    <option value="">Tipo de Evento</option>
+                                    <option value="Casamento">Casamento</option>
+                                    <option value="Infantil">Infantil</option>
+                                    <option value="Corporativo">Corporativo</option>
+                                    <option value="Ensaio">Ensaio</option>
+                                    <option value="Evento Adulto">Evento Adulto</option>
+                                </select>
+                            </div>
+                            <textarea id="evento-descricao" placeholder="Descrição/Detalhes do Evento (Horários, observações, etc...)" class="w-full p-2 border rounded mt-4" rows="3"></textarea>
+                            <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Adicionar Evento</button>
+                        </form>
+                    </div>
+                    <div id="lista-eventos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Os cards de evento aparecerão aqui -->
+                    </div>
+                </div>
+
+
+                <div id="section-clientes" class="content-section hidden">
+                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Clientes</h1>
+                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Cliente</h2>
+                        <form id="form-cliente">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <input type="text" id="cliente-nome" placeholder="Nome do Cliente" class="w-full p-2 border rounded" required>
+                                <input type="tel" id="cliente-telefone" placeholder="Telefone (WhatsApp)" class="w-full p-2 border rounded">
+                                <input type="email" id="cliente-email" placeholder="Email Principal" class="w-full p-2 border rounded">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <input type="text" id="cliente-documento" placeholder="CPF ou CNPJ (para contrato)" class="w-full p-2 border rounded">
+                            </div>
+                            <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">Adicionar Cliente</button>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                        <table class="w-full min-w-max">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Telefone</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Email</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Eventos</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-clientes">
+                               </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Seção "Entrega" com nova estrutura -->
+                <!-- ###################################################### -->
+                <div id="section-entrega" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestão de Entregas</h1>
+                    
+                    <!-- O seletor de filtro -->
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <div class="mb-4">
+                            <label for="entrega-evento-select" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Evento Específico</label>
+                            <select id="entrega-evento-select" class="w-full p-2 border rounded">
+                                <!-- Opção de limpar o filtro e ver os atrasos -->
+                                <option value="">Ver todos os atrasos (Padrão)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Visão de FILTRO (os 3 cards de um evento) -->
+                    <div id="entrega-management-area" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Os cards de entrega (Prévia, Mídia, Álbum) serão inseridos aqui -->
+                    </div>
+
+                    <!-- Visão PADRÃO (lista de atrasos) -->
+                    <div id="entrega-default-view">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Entregas Atrasadas ou Vencendo Hoje</h2>
+                        <!-- Container para a lista de atrasos -->
+                        <div id="entrega-atrasos-container" class="space-y-4">
+                            <!-- A lista de atrasos será inserida aqui pelo JS -->
+                        </div>
+                    </div>
+                </div>
+                <!-- ###################################################### -->
+
+
+                <div id="section-fotografos" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Fotógrafos</h1>
+                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Fotógrafo</h2>
+                        <form id="form-fotografo">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" id="fotografo-nome" placeholder="Nome do Fotógrafo" class="w-full p-2 border rounded" required>
+                                <input type="text" id="fotografo-contato" placeholder="Contato" class="w-full p-2 border rounded" required>
+                            </div>
+                            <button type="submit" class="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition">Adicionar Fotógrafo</button>
+                        </form>
+                    </div>
+                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                        <table class="w-full min-w-max">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Nome</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Contato</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-fotografos">
+                               </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="section-financeiro" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle Financeiro</h1>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Lançamento Inicial</h2>
+                        <form id="form-financeiro">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                               <select id="financeiro-cliente" class="w-full p-2 border rounded" required>
+                                   <option value="">Selecione o Cliente</option>
+                               </select>
+                                <input type="number" step="0.01" id="financeiro-valor-total" placeholder="Valor Total (R$)" class="w-full p-2 border rounded" required>
+                                <input type="number" step="0.01" id="financeiro-valor-pago" placeholder="1º Pagamento (R$)" class="w-full p-2 border rounded" required>
+                                <select id="financeiro-status" class="w-full p-2 border rounded" required>
+                                   <option value="Pendente">Pendente</option>
+                                   <option value="Pago Parcialmente">Pago Parcialmente</option>
+                                   <option value="Pago">Pago</option>
+                               </select>
+                            </div>
+                            <button type="submit" class="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">Adicionar Lançamento</button>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                        <table class="w-full min-w-max">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Total</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Pago</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor Restante</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-financeiro">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="section-custos" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle de Custos</h1>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Custo</h2>
+                        <form id="form-custo">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                               <input type="text" id="custo-descricao" placeholder="Descrição (Ex: Pagamento Freela)" class="w-full p-2 border rounded" required>
+                               <input type="number" step="0.01" id="custo-valor" placeholder="Valor do Custo (R$)" class="w-full p-2 border rounded" required>
+                               <select id="custo-evento" class="w-full p-2 border rounded" required>
+                                   <option value="">Selecione o Evento</option>
+                               </select>
+                            </div>
+                            <button type="submit" class="mt-4 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Adicionar Custo</button>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                        <table class="w-full min-w-max">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Descrição</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Evento Associado</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-custos">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Importações do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            
+            // --- CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE ---
+            const firebaseConfig = {
+              apiKey: "AIzaSyD5ugoPst247l63pmUZBqiTG3LzbJ68LOo",
+              authDomain: "wilkson-gestor-contratos.firebaseapp.com",
+              projectId: "wilkson-gestor-contratos",
+              storageBucket: "wilkson-gestor-contratos.firebasestorage.app",
+              messagingSenderId: "391559952649",
+              appId: "1:391559952649:web:f01e6262927eaea675bbd8"
+            };
+
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            let userId = null;
+            let dbState = { 
+                eventos: [], 
+                clientes: [], 
+                fotografos: [], 
+                financeiro: [], 
+                custos: []
+            };
+            
+            let unsubscribeListeners = [];
+            let selectedEventIdForEntrega = null;
+
+            // --- AUTENTICAÇÃO ---
+            onAuthStateChanged(auth, (user) => {
+                const loginOverlay = document.getElementById('login-overlay');
+                const appContainer = document.getElementById('app-container');
+
+                if (user) {
+                    userId = user.uid;
+                    loginOverlay.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                    appContainer.classList.add('flex');
+                    document.getElementById('auth-status').innerText = user.email;
+                    setupRealtimeListeners();
+                } else {
+                    userId = null;
+                    loginOverlay.classList.remove('hidden');
+                    appContainer.classList.add('hidden');
+                    appContainer.classList.remove('flex');
+                    document.getElementById('auth-status').innerText = "Desconectado";
+                    unsubscribeListeners.forEach(unsub => unsub());
+                    unsubscribeListeners = [];
+                    clearAllData();
+                    renderAll();
+                }
+            });
+
+            // --- Lógica de Login e Registro ---
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const loginError = document.getElementById('login-error');
+                loginError.classList.add('hidden');
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                    loginError.textContent = "Email ou senha incorretos.";
+                    loginError.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('register-button').addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const loginError = document.getElementById('login-error');
+                loginError.classList.add('hidden');
+                if (password.length < 6) {
+                    loginError.textContent = "A senha deve ter no mínimo 6 caracteres.";
+                    loginError.classList.remove('hidden');
+                    return;
+                }
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                    if (error.code === 'auth/email-already-in-use') {
+                        loginError.textContent = "Este email já está em uso.";
+                    } else {
+                        loginError.textContent = "Erro ao registrar. Tente novamente.";
+                    }
+                    loginError.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('logout-button').addEventListener('click', () => signOut(auth));
+
+            // --- Lógica do Modal de Pagamento ---
+            const paymentModal = document.getElementById('payment-modal');
+            const paymentForm = document.getElementById('payment-form');
+            document.getElementById('cancel-payment-button').addEventListener('click', () => {
+                paymentModal.classList.add('hidden');
+                paymentModal.classList.remove('flex');
+            });
+            paymentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const docId = document.getElementById('payment-doc-id').value;
+                const amount = parseFloat(document.getElementById('payment-amount').value);
+                
+                if (!docId || isNaN(amount) || amount <= 0) return;
+                const financialDoc = dbState.financeiro.find(item => item.id === docId);
+                if (!financialDoc) return;
+
+                const newPaid = (parseFloat(financialDoc.pago) || 0) + amount;
+                const total = parseFloat(financialDoc.total) || 0;
+                const newStatus = newPaid >= total ? 'Pago' : 'Pago Parcialmente';
+
+                try {
+                    const docRef = doc(db, `users/${userId}/financeiro/${docId}`);
+                    await updateDoc(docRef, { pago: newPaid, status: newStatus });
+                    paymentModal.classList.add('hidden');
+                    paymentModal.classList.remove('flex');
+                    paymentForm.reset();
+                } catch (error) { console.error("Erro ao atualizar pagamento:", error); }
+            });
+
+            // --- LISTENERS EM TEMPO REAL (ONSNAPSHOT) ---
+            function setupRealtimeListeners() {
+                if (!userId) return;
+                unsubscribeListeners.forEach(unsub => unsub());
+                unsubscribeListeners = [];
+                const collections = ['eventos', 'clientes', 'fotografos', 'financeiro', 'custos'];
+                collections.forEach(col => {
+                    const collectionPath = `users/${userId}/${col}`;
+                    const unsub = onSnapshot(collection(db, collectionPath), (querySnapshot) => {
+                        dbState[col] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        if (col === 'clientes') {
+                            dbState.clientes.sort((a, b) => a.nome.localeCompare(b.nome));
+                        }
+                        if (col === 'eventos') {
+                             dbState.eventos.sort((a, b) => new Date(b.data) - new Date(a.data));
+                        }
+                        renderAll();
+                    });
+                    unsubscribeListeners.push(unsub);
+                });
+            }
+
+            function clearAllData() {
+                dbState = { 
+                    eventos: [], clientes: [], fotografos: [], financeiro: [], custos: []
+                };
+                selectedEventIdForEntrega = null;
+                document.getElementById('entrega-management-area').classList.add('hidden');
+                document.getElementById('entrega-default-view').classList.remove('hidden'); // Garante que a view padrão apareça
+            }
+
+            function renderAll() {
+                renderEventos();
+                renderClientes();
+                renderFotografos();
+                renderFinanceiro();
+                renderCustos();
+                updateDashboard();
+                populateClienteSelect();
+                populateEventoSelect();
+                populateEventoClienteSelect(); 
+                populateEntregaEventoSelect();
+                
+                // ######################################################
+                // ALTERAÇÃO AQUI: Lógica de renderização de entrega
+                // ######################################################
+                // Decide qual view de "Entrega" mostrar
+                if (selectedEventIdForEntrega) {
+                    // Se um evento está selecionado, mostra os 3 cards dele
+                    document.getElementById('entrega-default-view').classList.add('hidden');
+                    document.getElementById('entrega-management-area').classList.remove('hidden');
+                    renderEntregaCards(selectedEventIdForEntrega);
+                } else {
+                    // Se nenhum evento selecionado, mostra a lista de atrasos
+                    document.getElementById('entrega-default-view').classList.remove('hidden');
+                    document.getElementById('entrega-management-area').classList.add('hidden');
+                    renderEntregasAtrasadas(); // <- Nova função
+                }
+                // ######################################################
+
+                lucide.createIcons();
+            }
+
+            // --- RENDERIZAÇÃO DAS SEÇÕES ---
+
+            function updateDashboard() {
+                document.getElementById('total-eventos').innerText = dbState.eventos.length;
+                document.getElementById('total-clientes').innerText = dbState.clientes.length;
+                
+                const clienteIds = dbState.clientes.map(a => a.id);
+                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
+
+                const totalPago = financeiroFiltrado.reduce((acc, item) => acc + (parseFloat(item.pago) || 0), 0);
+                document.getElementById('total-pago').innerText = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
+
+                const totalPendente = financeiroFiltrado.reduce((acc, item) => acc + ((parseFloat(item.total) || 0) - (parseFloat(item.pago) || 0)), 0);
+                document.getElementById('total-pendente').innerText = `R$ ${totalPendente.toFixed(2).replace('.', ',')}`;
+
+                const totalCustos = dbState.custos.reduce((acc, item) => acc + (parseFloat(item.valor) || 0), 0);
+                 document.getElementById('total-custos').innerText = `R$ ${totalCustos.toFixed(2).replace('.', ',')}`;
+
+                const lucroLiquido = totalPago - totalCustos;
+                const lucroEl = document.getElementById('lucro-liquido');
+                lucroEl.innerText = `R$ ${lucroLiquido.toFixed(2).replace('.', ',')}`;
+                lucroEl.classList.toggle('text-red-600', lucroLiquido < 0);
+                lucroEl.classList.toggle('text-gray-800', lucroLiquido >= 0);
+
+                const dashboardEventosContainer = document.getElementById('dashboard-eventos-recentes');
+                dashboardEventosContainer.innerHTML = dbState.eventos.length === 0 
+                    ? '<p class="text-gray-500">Nenhum evento cadastrado ainda.</p>'
+                    : dbState.eventos.slice(0, 5).map(evento => {
+                        const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
+                        return `<div class="border-b py-2 flex justify-between items-center"><p class="text-gray-700">${evento.nome}</p><p class="text-sm text-gray-500">${dataFormatada}</p></div>`;
+                    }).join('');
+            }
+
+            function renderEventos() {
+                const lista = document.getElementById('lista-eventos');
+                lista.innerHTML = dbState.eventos.map(evento => {
+                    const dataFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Data indefinida';
+                    const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
+                    const nomeCliente = cliente ? cliente.nome : "Cliente não encontrado";
+
+                    let borderColor = 'border-blue-500';
+                    switch(evento.tipo) {
+                        case 'Casamento': borderColor = 'border-pink-500'; break;
+                        case 'Infantil': borderColor = 'border-yellow-500'; break;
+                        case 'Corporativo': borderColor = 'border-indigo-500'; break;
+                        case 'Ensaio': borderColor = 'border-teal-500'; break;
+                        case 'Evento Adulto': borderColor = 'border-purple-500'; break;
+                    }
+
+                    return `<div class="bg-white p-5 rounded-lg shadow-md border-l-4 ${borderColor}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">${evento.nome}</h3>
+                                <p class="text-sm font-medium text-gray-600">${nomeCliente}</p>
+                            </div>
+                            <span class="text-xs font-semibold ${borderColor.replace('border-', 'bg-').replace('-500', '-100')} ${borderColor.replace('border-', 'text-').replace('-500', '-800')} px-2 py-1 rounded-full">${evento.tipo}</span>
+                        </div>
+                        <p class="text-gray-600 mt-2"><i data-lucide="calendar" class="inline-block w-4 h-4 mr-1"></i> ${dataFormatada}</p>
+                        <p class="text-gray-600 mt-1"><i data-lucide="map-pin" class="inline-block w-4 h-4 mr-1"></i> ${evento.local || 'Local a definir'}</p>
+                        <p class="text-gray-500 mt-2 text-sm">${evento.descricao || 'Sem detalhes definidos.'}</p>
+                        <div class="mt-4"><button onclick="window.app.deleteItem('eventos', '${evento.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>
+                    </div>`;
+                }).join('');
+            }
+
+
+            function renderClientes() {
+                const lista = document.getElementById('lista-clientes');
+                lista.innerHTML = dbState.clientes.length === 0 
+                    ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>'
+                    : dbState.clientes.map(cliente => {
+                        const numEventos = dbState.eventos.filter(e => e.clienteId === cliente.id).length;
+                        return `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 font-medium">${cliente.nome}</td>
+                            <td class="p-4">${cliente.telefone || '---'}</td>
+                            <td class="p-4">${cliente.email || '---'}</td>
+                            <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">${numEventos}</span></td>
+                            <td class="p-4"><button onclick="window.app.deleteItem('clientes', '${cliente.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
+                        </tr>`;
+                    }).join('');
+            }
+
+            function renderFotografos() {
+                const lista = document.getElementById('lista-fotografos');
+                 lista.innerHTML = dbState.fotografos.length === 0 
+                    ? '<tr><td colspan="3" class="p-4 text-center text-gray-500">Nenhum fotógrafo cadastrado.</td></tr>'
+                    : dbState.fotografos.map(fotografo => `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4">${fotografo.nome}</td><td class="p-4">${fotografo.contato}</td>
+                            <td class="p-4"><button onclick="window.app.deleteItem('fotografos', '${fotografo.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
+                        </tr>`).join('');
+            }
+
+            function renderFinanceiro() {
+                const lista = document.getElementById('lista-financeiro');
+                const clienteIds = dbState.clientes.map(a => a.id);
+                const financeiroFiltrado = dbState.financeiro.filter(f => clienteIds.includes(f.clienteId));
+
+                lista.innerHTML = financeiroFiltrado.length === 0 
+                    ? '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum lançamento financeiro.</td></tr>'
+                    : financeiroFiltrado.map(item => {
+                        const cliente = dbState.clientes.find(a => a.id === item.clienteId);
+                        if (!cliente) return ''; 
+
+                        const statusClass = item.status === 'Pago' ? 'bg-green-100 text-green-800' : (item.status === 'Pendente' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800');
+                        const total = parseFloat(item.total) || 0;
+                        const pago = parseFloat(item.pago) || 0;
+                        const restante = total - pago;
+                        return `<tr class="border-b hover:bg-gray-50">
+                            <td class="p-4">${cliente.nome}</td>
+                            <td class="p-4">R$ ${total.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4">R$ ${pago.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4 font-medium ${restante > 0 ? 'text-red-600' : 'text-green-600'}">R$ ${restante.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">${item.status}</span></td>
+                            <td class="p-4 flex items-center gap-2">
+                                <button onclick="window.app.openPaymentModal('${item.id}')" class="text-green-500 hover:text-green-700" title="Adicionar Pagamento"><i data-lucide="plus-circle" class="w-5 h-5"></i></button>
+                                <button onclick="window.app.deleteItem('financeiro', '${item.id}')" class="text-red-500 hover:text-red-700" title="Excluir Lançamento"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                            </td></tr>`;
+                    }).join('');
+            }
+            
+            function renderCustos() {
+                const lista = document.getElementById('lista-custos');
+                lista.innerHTML = dbState.custos.length === 0
+                    ? '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum custo cadastrado.</td></tr>'
+                    : dbState.custos.map(item => {
+                        const evento = dbState.eventos.find(e => e.id === item.eventoId);
+                        const valor = parseFloat(item.valor) || 0;
+                        return `<tr class="border-b hover:bg-gray-50">
+                            <td class="p-4">${item.descricao}</td>
+                            <td class="p-4">${evento ? evento.nome : 'Evento não encontrado'}</td>
+                            <td class="p-4">R$ ${valor.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4"><button onclick="window.app.deleteItem('custos', '${item.id}')" class="text-red-500 hover:text-red-700" title="Excluir Custo"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
+                        </tr>`;
+                    }).join('');
+            }
+            
+            // ######################################################
+            // ALTERAÇÃO AQUI: Lógica da Seção "Entrega" atualizada
+            // ######################################################
+
+            function populateEntregaEventoSelect() {
+                const select = document.getElementById('entrega-evento-select');
+                // Texto do option padrão atualizado
+                select.innerHTML = '<option value="">Ver todos os atrasos (Padrão)</option>';
+                dbState.eventos.forEach(evento => {
+                    const cliente = dbState.clientes.find(c => c.id === evento.clienteId);
+                    const nomeCliente = cliente ? `(${cliente.nome})` : '';
+                    const option = document.createElement('option');
+                    option.value = evento.id;
+                    option.textContent = `${evento.nome} ${nomeCliente}`;
+                    select.appendChild(option);
+                });
+                select.value = selectedEventIdForEntrega;
+            }
+
+            document.getElementById('entrega-evento-select').addEventListener('change', (e) => {
+                selectedEventIdForEntrega = e.target.value;
+                const managementArea = document.getElementById('entrega-management-area');
+                const defaultView = document.getElementById('entrega-default-view');
+
+                if (selectedEventIdForEntrega) {
+                    // Se um evento é selecionado, mostra a área de gerenciamento dele
+                    defaultView.classList.add('hidden');
+                    managementArea.classList.remove('hidden');
+                    renderEntregaCards(selectedEventIdForEntrega);
+                } else {
+                    // Se o filtro é limpo, mostra a view padrão de atrasos
+                    defaultView.classList.remove('hidden');
+                    managementArea.classList.add('hidden');
+                    managementArea.innerHTML = '';
+                    renderEntregasAtrasadas();
+                }
+            });
+
+            // Função de cálculo ATUALIZADA para retornar diffDays
+            function getEntregaInfo(evento, tipo) {
+                const dataEventoStr = evento.data;
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+
+                if (!dataEventoStr) {
+                    return { status: 'nodate', text: 'Data do evento não definida', deadline: 'N/A', bgColor: 'bg-gray-100', textColor: 'text-gray-500', diffDays: 99999 };
+                }
+
+                const dataEvento = new Date(dataEventoStr + 'T00:00:00');
+                let dataPrazo = new Date(dataEvento);
+                let statusField, dataField, title;
+
+                if (tipo === 'previa') {
+                    dataPrazo.setDate(dataEvento.getDate() + 3);
+                    statusField = 'entrega_previa_status';
+                    dataField = 'entrega_previa_data';
+                    title = 'PRÉVIA';
+                } else if (tipo === 'midia') {
+                    dataPrazo.setDate(dataEvento.getDate() + 60);
+                    statusField = 'entrega_midia_status';
+                    dataField = 'entrega_midia_data';
+                    title = 'FOTOS EM MÍDIA';
+                } else if (tipo === 'album') {
+                    dataPrazo.setMonth(dataEvento.getMonth() + 6);
+                    statusField = 'entrega_album_status';
+                    dataField = 'entrega_album_data';
+                    title = 'ALBUM IMPRESSO';
+                }
+
+                const prazoFormatado = dataPrazo.toLocaleDateString('pt-BR');
+                const diffTime = dataPrazo.getTime() - hoje.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (evento[statusField] === 'Entregue') {
+                    const dataEntrega = evento[dataField] ? new Date(evento[dataField]).toLocaleDateString('pt-BR') : '';
+                    return { 
+                        title, status: 'entregue', text: `Entregue em ${dataEntrega}`, 
+                        deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-green-100', 
+                        textColor: 'text-green-800', diffDays: 99998 // Já entregue, joga pro fim da lista
+                    };
+                }
+
+                if (diffDays < 0) {
+                    return { 
+                        title, status: 'atrasado', text: `${Math.abs(diffDays)} dia(s) atrasado`, 
+                        deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-red-100', 
+                        textColor: 'text-red-800', diffDays: diffDays // Número negativo (mais atrasado = menor)
+                    };
+                }
+                if (diffDays === 0) {
+                    return { 
+                        title, status: 'hoje', text: 'Vence Hoje', 
+                        deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-yellow-100', 
+                        textColor: 'text-yellow-800', diffDays: 0 // Vence hoje
+                    };
+                }
+                return { 
+                    title, status: 'pendente', text: `Vence em ${diffDays} dia(s)`, 
+                    deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-blue-100', 
+                    textColor: 'text-blue-800', diffDays: diffDays // Pendente
+                };
+            }
+
+            // Renderiza os 3 cards de um evento específico (visão de filtro)
+            function renderEntregaCards(eventId) {
+                const evento = dbState.eventos.find(e => e.id === eventId);
+                const container = document.getElementById('entrega-management-area');
+                
+                if (!evento) {
+                    container.innerHTML = '<p class="text-red-500">Erro: Evento não encontrado.</p>';
+                    return;
+                }
+
+                const tipos = ['previa', 'midia', 'album'];
+                container.innerHTML = tipos.map(tipo => {
+                    const info = getEntregaInfo(evento, tipo);
+                    
+                    const buttonHtml = info.status === 'entregue'
+                        ? `<button class="w-full bg-green-500 text-white font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-2" disabled>
+                                <i data-lucide="check-circle" class="w-5 h-5"></i> Entregue
+                           </button>`
+                        : `<button onclick="window.app.marcarEntregue('${eventId}', '${tipo}')" class="w-full bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+                                Marcar como Entregue
+                           </button>`;
+
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between ${info.bgColor} ${info.textColor}">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">${info.title}</h3>
+                                <p class="text-2xl font-bold mt-2">${info.text}</p>
+                                <p class="text-sm text-gray-600 mt-1">${info.deadline}</p>
+                            </div>
+                            <div class="mt-6">
+                                ${buttonHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                lucide.createIcons();
+            }
+
+            // ######################################################
+            // NOVA FUNÇÃO: Renderiza a lista de atrasos (visão padrão)
+            // ######################################################
+            function renderEntregasAtrasadas() {
+                const container = document.getElementById('entrega-atrasos-container');
+                let atrasos = [];
+
+                // 1. Coleta todos os itens pendentes, atrasados ou vencendo hoje
+                dbState.eventos.forEach(evento => {
+                    const tipos = ['previa', 'midia', 'album'];
+                    tipos.forEach(tipo => {
+                        const info = getEntregaInfo(evento, tipo);
+                        // Adiciona na lista apenas se não estiver pendente (longe) ou já entregue
+                        if (info.status === 'atrasado' || info.status === 'hoje') {
+                            atrasos.push({
+                                evento: evento,
+                                info: info
+                            });
+                        }
+                    });
+                });
+
+                // 2. Ordena a lista pelos mais atrasados (menor diffDays)
+                atrasos.sort((a, b) => a.info.diffDays - b.info.diffDays);
+
+                // 3. Renderiza o HTML
+                if (atrasos.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow">
+                            <h3 class="font-bold">Tudo em dia!</h3>
+                            <p>Nenhuma entrega está atrasada ou vencendo hoje.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = atrasos.map(item => {
+                    const cliente = dbState.clientes.find(c => c.id === item.evento.clienteId);
+                    const nomeCliente = cliente ? cliente.nome : 'Cliente não encontrado';
+                    const { bgColor, textColor, title, text, deadline } = item.info;
+
+                    return `
+                        <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between gap-4 ${bgColor} ${textColor}">
+                            <div class="flex-shrink-0 w-16 h-16 ${bgColor} rounded-lg flex items-center justify-center">
+                                <i data-lucide="${item.info.status === 'atrasado' ? 'alert-triangle' : 'alert-circle'}" class="w-8 h-8"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <span class="text-xs font-semibold ${bgColor.replace('-100', '-800')} ${bgColor.replace('bg-', 'bg-').replace('-100', '-200')} px-2 py-0.5 rounded-full">${title}</span>
+                                <h4 class="text-lg font-bold text-gray-900">${item.evento.nome}</h4>
+                                <p class="text-sm text-gray-700">${nomeCliente}</p>
+                            </div>
+                            <div class="flex-shrink-0 text-right">
+                                <p class="text-lg font-bold">${text}</p>
+                                <p class="text-sm text-gray-600">${deadline}</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <button onclick="window.app.viewEntregaFromAtraso('${item.evento.id}')" class="bg-gray-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-gray-700">
+                                    Ver Evento
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                lucide.createIcons();
+            }
+
+            // --- MANIPULADORES DE EVENTOS (SUBMIT FORMS) ---
+            async function handleFormSubmit(collectionName, data, formElement) {
+                if (!userId) { console.error("Usuário não autenticado."); return; }
+                try {
+                    await addDoc(collection(db, `users/${userId}/${collectionName}`), data);
+                    formElement.reset();
+                } catch (error) { console.error("Erro ao adicionar documento: ", error); }
+            }
+            
+            document.getElementById('form-evento').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                handleFormSubmit('eventos', { 
+                    clienteId: this.elements['evento-cliente'].value,
+                    nome: this.elements['evento-nome'].value, 
+                    data: this.elements['evento-data'].value, 
+                    local: this.elements['evento-local'].value,
+                    tipo: this.elements['evento-tipo'].value,
+                    descricao: this.elements['evento-descricao'].value,
+                    // Adiciona os campos de status de entrega
+                    entrega_previa_status: "Pendente",
+                    entrega_midia_status: "Pendente",
+                    entrega_album_status: "Pendente",
+                    entrega_previa_data: null,
+                    entrega_midia_data: null,
+                    entrega_album_data: null
+                }, this); 
+            });
+            
+            document.getElementById('form-cliente').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                handleFormSubmit('clientes', { 
+                    nome: this.elements['cliente-nome'].value, 
+                    telefone: this.elements['cliente-telefone'].value, 
+                    email: this.elements['cliente-email'].value,
+                    documento: this.elements['cliente-documento'].value
+                }, this); 
+            });
+
+            document.getElementById('form-fotografo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('fotografos', { nome: this.elements['fotografo-nome'].value, contato: this.elements['fotografo-contato'].value }, this); });
+            
+            document.getElementById('form-financeiro').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('financeiro', { clienteId: this.elements['financeiro-cliente'].value, total: parseFloat(this.elements['financeiro-valor-total'].value), pago: parseFloat(this.elements['financeiro-valor-pago'].value), status: this.elements['financeiro-status'].value }, this); });
+            
+            document.getElementById('form-custo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('custos', { descricao: this.elements['custo-descricao'].value, valor: parseFloat(this.elements['custo-valor'].value), eventoId: this.elements['custo-evento'].value }, this); });
+            
+            function populateSelectWithOptions(selectId, options) {
+                const select = document.getElementById(selectId);
+                const selectedValue = select.value;
+                select.innerHTML = options.header;
+                options.data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.nome;
+                    select.appendChild(option);
+                });
+                select.value = selectedValue;
+            }
+
+            function populateClienteSelect() {
+                populateSelectWithOptions('financeiro-cliente', {
+                    header: '<option value="">Selecione o Cliente</option>', 
+                    data: dbState.clientes
+                });
+            }
+            
+            function populateEventoClienteSelect() {
+                populateSelectWithOptions('evento-cliente', {
+                    header: '<option value="">Selecione o Cliente</option>', 
+                    data: dbState.clientes
+                });
+            }
+            
+            function populateEventoSelect() {
+                populateSelectWithOptions('custo-evento', { header: '<option value="">Selecione o Evento</option>', data: dbState.eventos });
+            }
+
+            // --- FUNÇÕES GLOBAIS ---
+            window.app = {
+                openPaymentModal: (docId) => {
+                    document.getElementById('payment-doc-id').value = docId;
+                    paymentModal.classList.remove('hidden');
+                    paymentModal.classList.add('flex');
+                    document.getElementById('payment-amount').focus();
+                },
+                deleteItem: async (collectionName, id) => {
+                    if (!userId) return;
+                    if (confirm(`Tem certeza que deseja excluir este item?`)) {
+                        try {
+                            await deleteDoc(doc(db, `users/${userId}/${collectionName}/${id}`));
+                        } catch (error) { console.error("Erro ao deletar documento: ", error); }
+                    }
+                },
+                showSection: (sectionId) => {
+                    if (window.innerWidth < 768) {
+                        document.getElementById('sidebar').classList.toggle('-translate-x-full');
+                    }
+                    document.querySelectorAll('.content-section').forEach(section => section.classList.add('hidden'));
+                    document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+                    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-gray-700'));
+                    event.currentTarget.classList.add('bg-gray-700');
+
+                    // ######################################################
+                    // ALTERAÇÃO AQUI: Lógica de visualização de entrega
+                    // ######################################################
+                    if (sectionId === 'entrega') {
+                        // Reseta para a view padrão (atrasos) toda vez que clica na aba
+                        selectedEventIdForEntrega = null;
+                        document.getElementById('entrega-evento-select').value = '';
+                        document.getElementById('entrega-default-view').classList.remove('hidden');
+                        document.getElementById('entrega-management-area').classList.add('hidden');
+                        renderEntregasAtrasadas();
+                    }
+                    // ######################################################
+                },
+                
+                // ######################################################
+                // NOVA FUNÇÃO: Para navegar da lista de atrasos para o evento
+                // ######################################################
+                viewEntregaFromAtraso: (eventId) => {
+                    // 1. Define o valor do select
+                    document.getElementById('entrega-evento-select').value = eventId;
+                    // 2. Atualiza a variável de estado
+                    selectedEventIdForEntrega = eventId;
+                    // 3. Esconde a view padrão
+                    document.getElementById('entrega-default-view').classList.add('hidden');
+                    // 4. Mostra a view de gerenciamento
+                    document.getElementById('entrega-management-area').classList.remove('hidden');
+                    // 5. Renderiza os cards para esse evento
+                    renderEntregaCards(eventId);
+                },
+
+                marcarEntregue: async (eventId, tipo) => {
+                    if (!userId || !eventId || !tipo) return;
+                    
+                    const docRef = doc(db, `users/${userId}/eventos/${eventId}`);
+                    const statusField = `entrega_${tipo}_status`;
+                    const dataField = `entrega_${tipo}_data`;
+
+                    try {
+                        await updateDoc(docRef, {
+                            [statusField]: "Entregue",
+                            [dataField]: new Date().toISOString()
+                        });
+                        // O onSnapshot vai atualizar a UI automaticamente
+                    } catch (error) {
+                        console.error("Erro ao marcar como entregue: ", error);
+                    }
+                }
+            };
+
+            // --- UI/Mobile ---
+            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            });
+
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
+
