@@ -144,9 +144,6 @@
             
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-8">
                 
-                <!-- ###################################################### -->
-                <!-- ALTERAÇÃO AQUI: Seção Dashboard (Funil de Vendas) -->
-                <!-- ###################################################### -->
                 <div id="section-dashboard" class="content-section">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -215,7 +212,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- ###################################################### -->
 
                 <div id="section-clientes" class="content-section hidden">
                      <h1 class="text-3xl font-bold text-gray-800 mb-6">Clientes</h1>
@@ -297,9 +293,6 @@
                                 </select>
                             </div>
                             
-                            <!-- ###################################################### -->
-                            <!-- ALTERAÇÃO AQUI: Linha 2 do Form Contrato (com data) -->
-                            <!-- ###################################################### -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                 <input type="number" step="0.01" id="contrato-valor-total" placeholder="Valor Total (R$)" class="w-full p-2 border rounded" required>
                                 <div>
@@ -314,7 +307,6 @@
                                     <option value="Cancelado">Cancelado</option>
                                 </select>
                             </div>
-                            <!-- ###################################################### -->
 
                             <!-- Linha 3: Link e Forma de Pagamento -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -417,16 +409,23 @@
                     </div>
                 </div>
                 
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Seção "Custos" (formulário e tabela) -->
+                <!-- ###################################################### -->
                 <div id="section-custos" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle de Custos</h1>
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Custo</h2>
                         <form id="form-custo">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                <input type="text" id="custo-descricao" placeholder="Descrição (Ex: Pagamento Freela)" class="w-full p-2 border rounded" required>
                                <input type="number" step="0.01" id="custo-valor" placeholder="Valor do Custo (R$)" class="w-full p-2 border rounded" required>
                                <select id="custo-evento" class="w-full p-2 border rounded" required>
                                    <option value="">Selecione o Evento</option>
+                               </select>
+                               <!-- Novo Campo -->
+                               <select id="custo-fotografo" class="w-full p-2 border rounded">
+                                   <option value="">Selecione o Fotógrafo (Opcional)</option>
                                </select>
                             </div>
                             <button type="submit" class="mt-4 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Adicionar Custo</button>
@@ -438,6 +437,7 @@
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Descrição</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Evento Associado</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Fotógrafo</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Valor</th>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
                                 </tr>
@@ -447,6 +447,8 @@
                         </table>
                     </div>
                 </div>
+                <!-- ###################################################### -->
+
 
             </main>
         </div>
@@ -632,12 +634,17 @@
                 renderFotografos();
                 renderFinanceiro();
                 renderCustos();
-                updateDashboard(); // <- Esta função foi reescrita
+                updateDashboard();
                 populateEventoSelect();
                 populateEventoClienteSelect(); 
                 populateEntregaEventoSelect();
                 populateContratoClienteSelect();
                 updateContratoEventoSelect();
+                // ######################################################
+                // ALTERAÇÃO AQUI: Nova função chamada
+                // ######################################################
+                populateCustoFotografoSelect();
+                // ######################################################
                 
                 if (selectedEventIdForEntrega) {
                     document.getElementById('entrega-default-view').classList.add('hidden');
@@ -654,9 +661,6 @@
 
             // --- RENDERIZAÇÃO DAS SEÇÕES ---
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: updateDashboard (lógica do funil)
-            // ######################################################
             function updateDashboard() {
                 // --- Métricas Financeiras (mantidas) ---
                 const totalPago = dbState.financeiro.reduce((acc, item) => acc + (parseFloat(item.valor) || 0), 0);
@@ -703,7 +707,6 @@
                 const anoAtual = hoje.getFullYear();
 
                 dbState.contratos.forEach(contrato => {
-                    // Considera "Assinado" ou "Concluído" como fechado
                     if ((contrato.status === 'Assinado' || contrato.status === 'Concluído') && contrato.dataContrato) {
                         const dataContrato = new Date(contrato.dataContrato + 'T00:00:00');
                         if (dataContrato.getMonth() === mesAtual && dataContrato.getFullYear() === anoAtual) {
@@ -738,7 +741,6 @@
                         return `<div class="border-b py-2 flex justify-between items-center"><p class="text-gray-700">${evento.nome}</p><p class="text-sm text-gray-500">${dataFormatada}</p></div>`;
                     }).join('');
             }
-            // ######################################################
 
             function renderEventos() {
                 const lista = document.getElementById('lista-eventos');
@@ -884,21 +886,27 @@
                     }).join('');
             }
             
+            // ######################################################
+            // ALTERAÇÃO AQUI: renderCustos (exibe fotógrafo)
+            // ######################################################
             function renderCustos() {
                 const lista = document.getElementById('lista-custos');
                 lista.innerHTML = dbState.custos.length === 0
-                    ? '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum custo cadastrado.</td></tr>'
+                    ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum custo cadastrado.</td></tr>'
                     : dbState.custos.map(item => {
                         const evento = dbState.eventos.find(e => e.id === item.eventoId);
+                        const fotografo = dbState.fotografos.find(f => f.id === item.fotografoId);
                         const valor = parseFloat(item.valor) || 0;
                         return `<tr class="border-b hover:bg-gray-50">
                             <td class="p-4">${item.descricao}</td>
                             <td class="p-4">${evento ? evento.nome : 'Evento não encontrado'}</td>
+                            <td class="p-4">${fotografo ? fotografo.nome : 'N/A'}</td>
                             <td class="p-4">R$ ${valor.toFixed(2).replace('.', ',')}</td>
                             <td class="p-4"><button onclick="window.app.deleteItem('custos', '${item.id}')" class="text-red-500 hover:text-red-700" title="Excluir Custo"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
                         </tr>`;
                     }).join('');
             }
+            // ######################################################
             
             // --- LÓGICA DA SEÇÃO DE ENTREGA (sem alterações) ---
 
@@ -1103,19 +1111,11 @@
                     formElement.reset();
                     if (formElement.id === 'form-contrato') {
                         updateContratoEventoSelect(null);
-                        // ######################################################
-                        // ALTERAÇÃO AQUI: Define a data do contrato como hoje
-                        // ######################################################
                         document.getElementById('contrato-data').valueAsDate = new Date();
-                        // ######################################################
                     }
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Define a data do pagamento como hoje
-                    // ######################################################
                     if (formElement.id === 'add-payment-form') {
                         document.getElementById('payment-date').valueAsDate = new Date();
                     }
-                    // ######################################################
                 } catch (error) { console.error("Erro ao adicionar documento: ", error); }
             }
             
@@ -1147,33 +1147,37 @@
                 }, this); 
             });
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: 'form-contrato' listener com data
-            // ######################################################
             document.getElementById('form-contrato').addEventListener('submit', function(e) {
                 e.preventDefault();
                 handleFormSubmit('contratos', {
                     clienteId: this.elements['contrato-cliente'].value,
                     eventoId: this.elements['contrato-evento'].value,
                     valorTotal: parseFloat(this.elements['contrato-valor-total'].value),
-                    dataContrato: this.elements['contrato-data'].value, // <- NOVO CAMPO
+                    dataContrato: this.elements['contrato-data'].value, 
                     status: this.elements['contrato-status'].value,
                     link: this.elements['contrato-link'].value,
                     formaPagamento: this.elements['contrato-forma-pagamento'].value
                 }, this);
             });
-            // ######################################################
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: Define a data do contrato como hoje no load
-            // ######################################################
             document.getElementById('contrato-data').valueAsDate = new Date();
-            // ######################################################
 
 
             document.getElementById('form-fotografo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('fotografos', { nome: this.elements['fotografo-nome'].value, contato: this.elements['fotografo-contato'].value }, this); });
             
-            document.getElementById('form-custo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('custos', { descricao: this.elements['custo-descricao'].value, valor: parseFloat(this.elements['custo-valor'].value), eventoId: this.elements['custo-evento'].value }, this); });
+            // ######################################################
+            // ALTERAÇÃO AQUI: form-custo (salva fotografoId)
+            // ######################################################
+            document.getElementById('form-custo').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                handleFormSubmit('custos', { 
+                    descricao: this.elements['custo-descricao'].value, 
+                    valor: parseFloat(this.elements['custo-valor'].value), 
+                    eventoId: this.elements['custo-evento'].value,
+                    fotografoId: this.elements['custo-fotografo'].value // <- NOVO
+                }, this); 
+            });
+            // ######################################################
             
             function populateSelectWithOptions(selectId, options) {
                 const select = document.getElementById(selectId);
@@ -1198,6 +1202,17 @@
             function populateEventoSelect() {
                 populateSelectWithOptions('custo-evento', { header: '<option value="">Selecione o Evento</option>', data: dbState.eventos });
             }
+
+            // ######################################################
+            // ALTERAÇÃO AQUI: Nova função
+            // ######################################################
+            function populateCustoFotografoSelect() {
+                populateSelectWithOptions('custo-fotografo', { 
+                    header: '<option value="">Selecione o Fotógrafo (Opcional)</option>', 
+                    data: dbState.fotografos 
+                });
+            }
+            // ######################################################
 
             function populateContratoClienteSelect() {
                 populateSelectWithOptions('contrato-cliente', {
@@ -1278,11 +1293,7 @@
                     if (sectionId === 'contratos') {
                         updateContratoEventoSelect(null);
                         document.getElementById('form-contrato').reset();
-                        // ######################################################
-                        // ALTERAÇÃO AQUI: Define a data do contrato como hoje
-                        // ######################################################
                         document.getElementById('contrato-data').valueAsDate = new Date();
-                        // ######################################################
                     }
                 },
                 
