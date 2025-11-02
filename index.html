@@ -206,6 +206,13 @@
                 <a href="#" onclick="window.app.showSection('contratos')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="file-text" class="inline-block w-5 h-5 mr-2"></i> Contratos
                 </a>
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Novo item de menu "Gerar Contrato" -->
+                <!-- ###################################################### -->
+                <a href="#" onclick="window.app.showSection('gerador')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
+                    <i data-lucide="pen-square" class="inline-block w-5 h-5 mr-2"></i> Gerar Contrato
+                </a>
+                <!-- ###################################################### -->
                 <a href="#" onclick="window.app.showSection('entrega')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 nav-link">
                     <i data-lucide="package-check" class="inline-block w-5 h-5 mr-2"></i> Entrega
                 </a>
@@ -469,6 +476,26 @@
                     </div>
                 </div>
 
+                <!-- ###################################################### -->
+                <!-- ALTERAÇÃO AQUI: Nova Seção "Gerar Contrato" (Iframe) -->
+                <!-- ###################################################### -->
+                <div id="section-gerador" class="content-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Gerador de Contratos</h1>
+                        <a href="https://wilksonac.github.io/contratos/" target="_blank" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 flex items-center gap-2">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            Abrir em Nova Aba
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <iframe id="gerador-iframe" src="https://wilksonac.github.io/contratos/" class="w-full h-[calc(100vh-200px)] border-0">
+                            Carregando gerador...
+                        </iframe>
+                    </div>
+                </div>
+                <!-- ###################################################### -->
+
 
                 <div id="section-entrega" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestão de Entregas</h1>
@@ -621,13 +648,9 @@
             
             let calendarioData = new Date();
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: Variáveis para Drag & Drop Mobile
-            // ######################################################
             let draggedCard = null; // Armazena o card (HTML element) que está sendo arrastado
             let draggedEventoId = null; // Armazena o ID do evento
             let currentDropZone = null; // Armazena a coluna de destino
-            // ######################################################
             
             let unsubscribeListeners = [];
             let selectedEventIdForEntrega = null;
@@ -971,7 +994,7 @@
 
             function renderContratos() {
                 const lista = document.getElementById('lista-contratos');
-                lista.innerHTML = dbState.contratos.length === 0
+                lista.innerHTML = dbState.contratos.length === 0 
                     ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum contrato cadastrado.</td></tr>'
                     : dbState.contratos.map(contrato => {
                         const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
@@ -1344,9 +1367,6 @@
                 lucide.createIcons();
             }
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: Lógica de Drag and Drop (Mouse + Touch)
-            // ######################################################
             function initDragAndDrop() {
                 const boardContainer = document.getElementById('kanban-board-container');
                 if (!boardContainer) return;
@@ -1468,7 +1488,6 @@
                     currentDropZone = null;
                 });
             }
-            // ######################################################
 
 
             // --- MANIPULADORES DE EVENTOS (SUBMIT FORMS) ---
@@ -1705,6 +1724,16 @@
                     if (sectionId === 'calendario') {
                         renderCalendario();
                     }
+                    // ######################################################
+                    // ALTERAÇÃO AQUI: Recarrega o iframe do gerador
+                    // ######################################################
+                    if (sectionId === 'gerador') {
+                        const iframe = document.getElementById('gerador-iframe');
+                        if (iframe) {
+                            iframe.src = "https://wilksonac.github.io/contratos/";
+                        }
+                    }
+                    // ######################################################
                 },
                 
                 viewEntregaFromAtraso: (eventId) => {
