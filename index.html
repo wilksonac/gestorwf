@@ -2730,4 +2730,157 @@
                     const docRef = doc(db, `users/${userId}/eventos/${eventoId}`);
                     try {
                         await updateDoc(docRef, {
+                            colunaId: novaColunaId
+                        });
+                        // O onSnapshot vai pegar a mudança e chamar o renderKanban()
+                    } catch (error) {
+                        console.error("Erro ao atualizar status do evento: ", error);
+                    }
+                },
+
+                abrirGerador: (contratoId) => {
+                    const contrato = dbState.contratos.find(c => c.id === contratoId);
+                    if (!contrato) {
+                        alert("Erro: Contrato não encontrado.");
+                        return;
+                    }
+                    const cliente = dbState.clientes.find(c => c.id === contrato.clienteId);
+                    const evento = dbState.eventos.find(e => e.id === contrato.eventoId);
+                    
+                    // Mudar para a seção do gerador
+                    window.app.showSection('gerador');
+                    
+                    // Preencher os dados
+                    if (cliente) {
+                        document.getElementById('clientName').value = cliente.nome || '';
+                        document.getElementById('clientCPF').value = cliente.documento || '';
+                        document.getElementById('clientAddress').value = cliente.endereco || '';
+                        document.getElementById('clientEmail').value = cliente.email || '';
+                        document.getElementById('clientPhone').value = cliente.telefone || '';
+                    }
+                    if (evento) {
+                        document.getElementById('eventDate').value = evento.data || '';
+                        document.getElementById('eventLocal').value = evento.local || '';
+                        document.getElementById('package').value = evento.descricao || '';
+                        
+                        // Tenta adivinhar o tipo de contrato
+                        let contractTypeValue = '4'; // Padrão "Eventos em Geral"
+                        if (evento.tipo === 'Infantil') contractTypeValue = '1';
+                        if (evento.tipo === 'Casamento') contractTypeValue = '2';
+                        // Adicionar mais lógicas se necessário (ex: Casamento Civil, Formatura)
+                        
+                        const contractTypeSelect = document.getElementById('contractType');
+                        contractTypeSelect.value = contractTypeValue;
+                        // Dispara o evento 'change' para o JS do gerador mostrar os campos corretos
+                        contractTypeSelect.dispatchEvent(new Event('change'));
+                    }
+                    if (contrato) {
+                        document.getElementById('value').value = contrato.valorTotal || '';
+                        document.getElementById('paymentMethod').value = contrato.formaPagamento || '';
+                    }
+
+                    // Foca no primeiro campo
+                    document.getElementById('clientName').focus();
+                    alert("Dados do contrato pré-preenchidos! Verifique e gere o contrato.");
+                },
+
+
+                deleteItem: async (collectionName, id) => {
+                    if (!userId) return;
+                    
+                    let message = `Tem certeza que deseja excluir este item?`;
+                    if (collectionName === 'clientes' || collectionName === 'eventos') {
+                        message += `\n\Nenhum contrato, evento ou pagamento associado será excluído.`;
+                    }
+                    if (collectionName === 'contratos') {
+                        message += `\n\nATENÇÃO: Isso NÃO excluirá os pagamentos já feitos (no Histórico de Pagamentos).`;
+                    }
+                    if (collectionName === 'financeiro') {
+                        message = `Tem certeza que deseja excluir este PAGAMENTO? Esta ação não pode ser desfeita.`;
+                    }
+                    
+                    if (confirm(message)) {
+                        try {
+                            await deleteDoc(doc(db, `users/${userId}/${collectionName}/${id}`));
+                        } catch (error) { console.error("Erro ao deletar documento: ", error); }
+                    }
+                },
+                showSection: (sectionId) => {
+                    if (window.innerWidth < 768) {
+                        document.getElementById('sidebar').classList.toggle('-translate-x-full');
+                    }
+                    document.querySelectorAll('.content-section').forEach(section => section.classList.add('hidden'));
+                    document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+                    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-gray-700'));
+                    event.currentTarget.classList.add('bg-gray-700');
+
+                    if (sectionId === 'entrega') {
+                        selectedEventIdForEntrega = null;
+                        document.getElementById('entrega-evento-select').value = '';
+                        document.getElementById('entrega-default-view').classList.remove('hidden');
+                        document.getElementById('entrega-management-area').classList.add('hidden');
+                        renderEntregasAtrasadas();
+                    }
+                    if (sectionId === 'contratos') {
+                        updateContratoEventoSelect(null);
+                        document.getElementById('form-contrato').reset();
+                        document.getElementById('contrato-data').valueAsDate = new Date();
+                    }
+                    if (sectionId === 'calendario') {
+                        renderCalendario();
+                    }
+                    if (sectionId === 'gerador') {
+                        // Limpa o formulário se o usuário clicou no MENU
+                        // (Se ele clicou no botão "Gerar Texto", a função 'abrirGerador' vai popular)
+                        if (event.currentTarget.getAttribute('onclick').includes("showSection('gerador')")) {
+                            document.getElementById('contractForm').reset();
+                            const contractTypeSelect = document.getElementById('contractType');
+                            contractTypeSelect.value = '';
+                            contractTypeSelect.dispatchEvent(new Event('change'));
+                            document.getElementById('outputSection').classList.add('hidden');
+                        }
+                    }
+                },
+                
+                viewEntregaFromAtraso: (eventId) => {
+                    document.getElementById('entrega-evento-select').value = eventId;
+                    selectedEventIdForEntrega = eventId;
+                    document.getElementById('entrega-default-view').classList.add('hidden');
+                    document.getElementById('entrega-management-area').classList.remove('hidden');
+                    renderEntregaCards(eventId);
+                },
+
+                marcarEntregue: async (eventId, tipo) => {
+                    if (!userId || !eventId || !tipo) return;
+                    
+                    const docRef = doc(db, `users/${userId}/eventos/${eventId}`);
+                    const statusField = `entrega_${tipo}_status`;
+                    const dataField = `entrega_${tipo}_data`;
+
+                    try {
+                        await updateDoc(docRef, {
+                            [statusField]: "Entregue",
+                            [dataField]: new Date().toISOString()
+                        });
+                    } catch (error) {
+                        console.error("Erro ao marcar como entregue: ", error);
+                    }
+                }
+            };
+
+            // --- UI/Mobile ---
+            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            });
+
+            document.getElementById('calendario-prev').addEventListener('click', () => mudarMes(-1));
+            document.getElementById('calendario-next').addEventListener('click', () => mudarMes(1));
+
+            lucide.createIcons();
+
+            initDragAndDrop();
+        });
+    </script>
+</body>
+</html>
 
