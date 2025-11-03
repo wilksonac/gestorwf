@@ -665,9 +665,6 @@
                     </div>
                 </div>
                 
-                <!-- ###################################################### -->
-                <!-- ALTERAÇÃO AQUI: Seção "Custos" (formulário e tabela) -->
-                <!-- ###################################################### -->
                 <div id="section-custos" class="content-section hidden">
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Controle de Custos</h1>
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -727,7 +724,6 @@
                         </table>
                     </div>
                 </div>
-                <!-- ###################################################### -->
 
 
             </main>
@@ -896,8 +892,8 @@
                         if (col === 'eventos') {
                              dbState.eventos.sort((a, b) => new Date(a.data) - new Date(b.data)); // Ordena por data (mais antigo primeiro)
                         }
-                        if (col === 'financeiro') {
-                            dbState.financeiro.sort((a, b) => new Date(b.data) - new Date(a.data));
+                        if (col === 'financeiro' || col === 'custos') {
+                            dbState[col].sort((a, b) => new Date(b.data) - new Date(a.data));
                         }
                         if (col === 'colunas') {
                             dbState.colunas.sort((a, b) => a.ordem - b.ordem);
@@ -1224,9 +1220,6 @@
                     }).join('');
             }
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: renderCustos (com data e tipo)
-            // ######################################################
             function renderCustos() {
                 const lista = document.getElementById('lista-custos');
                 lista.innerHTML = dbState.custos.length === 0
@@ -1249,7 +1242,6 @@
                         </tr>`;
                     }).join('');
             }
-            // ######################################################
 
             function renderCalendario() {
                 calendarioData.setDate(1); // Garante que estamos no primeiro dia do mês
@@ -1654,16 +1646,12 @@
                     if (formElement.id === 'add-payment-form') {
                         document.getElementById('payment-date').valueAsDate = new Date();
                     }
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Reseta o form de custos
-                    // ######################################################
                     if (formElement.id === 'form-custo') {
                         document.getElementById('custo-data').valueAsDate = new Date();
                         document.getElementById('tipo-custo-evento').checked = true;
                         document.getElementById('custos-evento-fields').classList.remove('hidden');
                         document.getElementById('custo-evento').required = true;
                     }
-                    // ######################################################
                 } catch (error) { console.error("Erro ao adicionar documento: ", error); }
             }
             
@@ -1723,9 +1711,6 @@
 
             document.getElementById('form-fotografo').addEventListener('submit', function(e) { e.preventDefault(); handleFormSubmit('fotografos', { nome: this.elements['fotografo-nome'].value, contato: this.elements['fotografo-contato'].value }, this); });
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: form-custo (lógica de envio)
-            // ######################################################
             document.getElementById('form-custo').addEventListener('submit', function(e) { 
                 e.preventDefault(); 
                 const tipoCusto = this.elements['tipo-custo'].value;
@@ -1744,7 +1729,6 @@
                 
                 handleFormSubmit('custos', data, this); 
             });
-            // ######################################################
 
             document.getElementById('form-nova-coluna').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -1822,9 +1806,6 @@
                 updateContratoEventoSelect(e.target.value);
             });
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: Listeners para o form de custos
-            // ######################################################
             const tipoCustoRadios = document.querySelectorAll('input[name="tipo-custo"]');
             const eventoFields = document.getElementById('custos-evento-fields');
             const custoEventoSelect = document.getElementById('custo-evento');
@@ -1841,7 +1822,6 @@
                 });
             });
             document.getElementById('custo-data').valueAsDate = new Date();
-            // ######################################################
 
 
             // --- FUNÇÕES GLOBAIS ---
@@ -2034,16 +2014,12 @@
                             iframe.src = "https://wilksonac.github.io/contratos/";
                         }
                     }
-                    // ######################################################
-                    // ALTERAÇÃO AQUI: Reseta o form de custos ao mostrar
-                    // ######################################################
                     if (sectionId === 'custos') {
                         document.getElementById('custo-data').valueAsDate = new Date();
                         document.getElementById('tipo-custo-evento').checked = true;
                         document.getElementById('custos-evento-fields').classList.remove('hidden');
                         document.getElementById('custo-evento').required = true;
                     }
-                    // ######################################################
                 },
                 
                 viewEntregaFromAtraso: (eventId) => {
@@ -2080,9 +2056,6 @@
             document.getElementById('calendario-prev').addEventListener('click', () => mudarMes(-1));
             document.getElementById('calendario-next').addEventListener('click', () => mudarMes(1));
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: Listeners para o form de custos
-            // ######################################################
             const tipoCustoRadios = document.querySelectorAll('input[name="tipo-custo"]');
             const eventoFields = document.getElementById('custos-evento-fields');
             const custoEventoSelect = document.getElementById('custo-evento');
@@ -2099,7 +2072,7 @@
                 });
             });
             document.getElementById('custo-data').valueAsDate = new Date();
-            // ######################################################
+
 
             lucide.createIcons();
             initDragAndDrop();
@@ -2107,5 +2080,4 @@
     </script>
 </body>
 </html>
-
 
