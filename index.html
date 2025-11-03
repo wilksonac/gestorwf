@@ -2056,23 +2056,7 @@
             document.getElementById('calendario-prev').addEventListener('click', () => mudarMes(-1));
             document.getElementById('calendario-next').addEventListener('click', () => mudarMes(1));
 
-            const tipoCustoRadios = document.querySelectorAll('input[name="tipo-custo"]');
-            const eventoFields = document.getElementById('custos-evento-fields');
-            const custoEventoSelect = document.getElementById('custo-evento');
-
-            tipoCustoRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    if (e.target.value === 'fixo') {
-                        eventoFields.classList.add('hidden');
-                        custoEventoSelect.required = false;
-                    } else {
-                        eventoFields.classList.remove('hidden');
-                        custoEventoSelect.required = true;
-                    }
-                });
-            });
-            document.getElementById('custo-data').valueAsDate = new Date();
-
+            // O bloco de código duplicado que começava com "const tipoCustoRadios..." foi removido desta área.
 
             lucide.createIcons();
             initDragAndDrop();
