@@ -203,6 +203,14 @@
                 display: none;
             }
         }
+        
+        /* ###################################################### */
+        /* ALTERAÇÃO AQUI: Estilos para o Modal Dossiê */
+        /* ###################################################### */
+        .modal-content {
+            max-height: 90vh;
+        }
+        /* ###################################################### */
 
     </style>
 </head>
@@ -269,66 +277,6 @@
         </div>
     </div>
 
-    <!-- ###################################################### -->
-    <!-- ALTERAÇÃO AQUI:    <!-- Modal de Dossiê do Cliente -->
-    <div id="dossie-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Dossiê do Cliente: <span id="dossie-cliente-nome" class="text-blue-600"></span></h2>
-                <button id="close-dossie-modal" class="text-gray-500 hover:text-gray-700">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-
-            <div id="dossie-content" class="space-y-6">
-                <!-- Seção 1: Dados do Cliente -->
-                <section class="border-b pb-4">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-3 flex items-center gap-2"><i data-lucide="user" class="w-5 h-5"></i> Dados do Cliente</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="font-medium text-gray-600">Telefone:</span> <span id="dossie-cliente-telefone"></span></div>
-                        <div><span class="font-medium text-gray-600">Email:</span> <span id="dossie-cliente-email"></span></div>
-                        <div class="md:col-span-2"><span class="font-medium text-gray-600">Documento:</span> <span id="dossie-cliente-documento"></span></div>
-                        <div class="md:col-span-2"><span class="font-medium text-gray-600">Endereço:</span> <span id="dossie-cliente-endereco"></span></div>
-                    </div>
-                </section>
-
-                <!-- Seção 2: Dados do Evento -->
-                <section class="border-b pb-4">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-3 flex items-center gap-2"><i data-lucide="calendar-check" class="w-5 h-5"></i> Dados do Evento</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="font-medium text-gray-600">Nome:</span> <span id="dossie-evento-nome"></span></div>
-                        <div><span class="font-medium text-gray-600">Tipo:</span> <span id="dossie-evento-tipo"></span></div>
-                        <div><span class="font-medium text-gray-600">Data:</span> <span id="dossie-evento-data"></span></div>
-                        <div><span class="font-medium text-gray-600">Local:</span> <span id="dossie-evento-local"></span></div>
-                        <div class="md:col-span-2"><span class="font-medium text-gray-600">Descrição:</span> <span id="dossie-evento-descricao"></span></div>
-                    </div>
-                </section>
-
-                <!-- Seção 3: Dados do Contrato -->
-                <section class="border-b pb-4">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-3 flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Dados do Contrato</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="font-medium text-gray-600">Valor Total:</span> <span id="dossie-contrato-valor"></span></div>
-                        <div><span class="font-medium text-gray-600">Data Assinatura:</span> <span id="dossie-contrato-data"></span></div>
-                        <div><span class="font-medium text-gray-600">Status:</span> <span id="dossie-contrato-status"></span></div>
-                        <div><span class="font-medium text-gray-600">Link:</span> <span id="dossie-contrato-link"></span></div>
-                        <div class="md:col-span-2"><span class="font-medium text-gray-600">Forma de Pagamento:</span> <span id="dossie-contrato-forma-pagamento"></span></div>
-                    </div>
-                </section>
-
-                <!-- Seção 4: Pagamentos -->
-                <section>
-                    <h3 class="text-xl font-semibold text-gray-700 mb-3 flex items-center gap-2"><i data-lucide="dollar-sign" class="w-5 h-5"></i> Histórico de Pagamentos</h3>
-                    <div id="dossie-pagamentos-lista" class="space-y-2">
-                        <!-- Pagamentos serão inseridos aqui -->
-                    </div>
-                    <p id="dossie-pagamentos-vazio" class="text-sm text-gray-500 hidden">Nenhum pagamento registrado para este contrato.</p>
-                </section>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Edição de Contrato -->  <!-- ###################################################### -->
     <div id="edit-contract-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
         <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Editar Contrato</h2>
@@ -361,6 +309,128 @@
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Salvar Alterações</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ###################################################### -->
+    <!-- ALTERAÇÃO AQUI: Novo Modal "Dossiê" -->
+    <!-- ###################################################### -->
+    <div id="dossie-modal" class="fixed inset-0 bg-black bg-opacity-70 z-40 hidden items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-6xl modal-content">
+            <!-- Cabeçalho do Modal -->
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Dossiê do Evento</h2>
+                <button onclick="window.app.closeDossieModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Conteúdo do Dossiê -->
+            <div id="dossie-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-[calc(90vh-100px)] p-1">
+                
+                <!-- Coluna 1: Informações Principais -->
+                <div class="space-y-6">
+                    <!-- Card Cliente/Evento -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-3">Informações</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <span class="text-xs text-gray-500">Evento</span>
+                                <p id="dossie-evento-nome" class="font-bold text-gray-900 text-lg">Nome do Evento</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500">Cliente</span>
+                                <p id="dossie-cliente-nome" class="font-medium text-gray-800">Nome do Cliente</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500">Contato</span>
+                                <p id="dossie-cliente-contato" class="text-sm text-gray-600">Telefone | Email</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500">Data do Evento</span>
+                                <p id="dossie-evento-data" class="text-sm text-gray-600">dd/mm/aaaa</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500">Local</span>
+                                <p id="dossie-evento-local" class="text-sm text-gray-600">Local do Evento</p>
+                            </div>
+                             <div>
+                                <span class="text-xs text-gray-500">Link do Contrato</span>
+                                <p id="dossie-contrato-link" class="text-sm text-blue-600 truncate">...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Entregas -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-3">Status das Entregas</h3>
+                        <div id="dossie-entregas-lista" class="space-y-3">
+                            <!-- Preenchido pelo JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Financeiro -->
+                <div class="space-y-6">
+                    <!-- Card Resumo Financeiro -->
+                    <div class="bg-blue-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-blue-800 border-b border-blue-200 pb-2 mb-3">Resumo Financeiro</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <span class="text-xs text-blue-700">Valor do Contrato</span>
+                                <p id="dossie-valor-contrato" class="font-bold text-blue-900 text-2xl">R$ 0,00</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-green-700">Total Pago</span>
+                                <p id="dossie-total-pago" class="font-medium text-green-700 text-lg">R$ 0,00</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-red-700">Valor Restante</span>
+                                <p id="dossie-valor-restante" class="font-bold text-red-700 text-xl">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Extrato de Pagamentos -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-3">Extrato de Pagamentos</h3>
+                        <div id="dossie-pagamentos-lista" class="space-y-2 text-sm max-h-48 overflow-y-auto">
+                            <!-- Preenchido pelo JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Lucratividade -->
+                <div class="space-y-6">
+                    <!-- Card Lucratividade -->
+                    <div class="bg-green-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-green-800 border-b border-green-200 pb-2 mb-3">Lucratividade do Evento</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <span class="text-xs text-green-700">Valor (Contrato)</span>
+                                <p id="dossie-lucro-valor" class="font-medium text-green-700 text-lg">+ R$ 0,00</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-red-700">Total de Custos</span>
+                                <p id="dossie-lucro-custos" class="font-medium text-red-700 text-lg">- R$ 0,00</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-700">Lucro Líquido</span>
+                                <p id="dossie-lucro-liquido" class="font-bold text-gray-900 text-3xl">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Lista de Custos -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-3">Lista de Custos</h3>
+                        <div id="dossie-custos-lista" class="space-y-2 text-sm max-h-48 overflow-y-auto">
+                            <!-- Preenchido pelo JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
     <!-- ###################################################### -->
@@ -539,7 +609,7 @@
                         </form>
                     </div>
                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                        <table class="w-full min-w-max">
+                        <table class="w-full min-w-max responsive-table">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente (Eventos)</th>
@@ -642,7 +712,7 @@
                         </form>
                     </div>
                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                        <table class="w-full min-w-max">
+                        <table class="w-full min-w-max responsive-table">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Cliente</th>
@@ -875,7 +945,7 @@
                         </form>
                     </div>
                      <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                        <table class="w-full min-w-max">
+                        <table class="w-full min-w-max responsive-table">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Nome</th>
@@ -893,7 +963,7 @@
                     <h1 class="text-3xl font-bold text-gray-800 mb-6">Histórico de Pagamentos</h1>
                     
                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                        <table class="w-full min-w-max">
+                        <table class="w-full min-w-max responsive-table">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Data</th>
@@ -930,7 +1000,7 @@
                         </form>
                     </div>
                     <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                        <table class="w-full min-w-max">
+                        <table class="w-full min-w-max responsive-table">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="p-4 text-left text-sm font-semibold text-gray-600">Descrição</th>
@@ -1505,21 +1575,14 @@
                 }
             });
             
-            // ######################################################
-            // ALTERAÇÃO AQUI: Lógica do Novo Modal de Edição
-            // ######################################################
             const editContractModal = document.getElementById('edit-contract-modal');
             const editContractForm = document.getElementById('edit-contract-form');
 
-	            document.getElementById('edit-contract-modal-close').addEventListener('click', () => {
-	                editContractModal.classList.add('hidden');
-	                editContractModal.classList.remove('flex');
-	            });
-	            
-	            document.getElementById('close-dossie-modal').addEventListener('click', () => {
-	                document.getElementById('dossie-modal').classList.add('hidden');
-	                document.getElementById('dossie-modal').classList.remove('flex');
-	            });           
+            document.getElementById('cancel-edit-contract-button').addEventListener('click', () => {
+                editContractModal.classList.add('hidden');
+                editContractModal.classList.remove('flex');
+            });
+            
             editContractForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const contratoId = document.getElementById('edit-contrato-id').value;
@@ -1544,7 +1607,6 @@
                     alert("Falha ao atualizar o contrato.");
                 }
             });
-            // ######################################################
 
 
             // --- LISTENERS EM TEMPO REAL (ONSNAPSHOT) ---
@@ -1732,7 +1794,9 @@
                             case 'Evento Adulto': borderColor = 'border-purple-500'; break;
                         }
 
-                        // Adicionado draggable="true", class="kanban-card" e data-evento-id
+                        // ######################################################
+                        // ALTERAÇÃO AQUI: Adicionado botão do Dossiê
+                        // ######################################################
                         return `
                         <div class="kanban-card bg-white p-5 rounded-lg shadow-md border-l-4 ${borderColor}" draggable="true" data-evento-id="${evento.id}">
                             <div class="flex justify-between items-start">
@@ -1745,8 +1809,16 @@
                             <p class="text-gray-600 mt-2"><i data-lucide="calendar" class="inline-block w-4 h-4 mr-1"></i> ${dataFormatada}</p>
                             <p class="text-gray-600 mt-1"><i data-lucide="map-pin" class="inline-block w-4 h-4 mr-1"></i> ${evento.local || 'Local a definir'}</p>
                             <p class="text-gray-500 mt-2 text-sm">${evento.descricao || 'Sem detalhes definidos.'}</p>
-                            <div class="mt-4"><button onclick="window.app.deleteItem('eventos', '${evento.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>
+                            <div class="mt-4 flex items-center gap-3">
+                                <button onclick="window.app.openDossieModalFromEvento('${evento.id}')" class="text-blue-500 hover:text-blue-700" title="Ver Dossiê">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                                <button onclick="window.app.deleteItem('eventos', '${evento.id}')" class="text-red-500 hover:text-red-700" title="Excluir Evento">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>`;
+                        // ######################################################
                     }).join('');
 
                     if (eventosDaColuna.length === 0) {
@@ -1782,12 +1854,9 @@
                     }).join('');
             }
 
-            // ######################################################
-            // ALTERAÇÃO AQUI: Tabela de Contratos (adiciona botão de editar)
-            // ######################################################
             function renderContratos() {
                 const lista = document.getElementById('lista-contratos');
-                lista.innerHTML = dbState.contratos.length === 0
+                lista.innerHTML = dbState.contratos.length === 0 
                     ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum contrato cadastrado.</td></tr>'
                     : dbState.contratos.map(contrato => {
                         const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
@@ -1817,6 +1886,9 @@
                         if (restante <= 0 && valorTotal > 0) restanteClass = 'text-green-600';
 
 
+                        // ######################################################
+                        // ALTERAÇÃO AQUI: Adicionado botão do Dossiê e Editar
+                        // ######################################################
                         return `
                         <tr class="border-b hover:bg-gray-50">
                             <td class="p-4">${cliente.nome}</td>
@@ -1827,18 +1899,16 @@
                                 <div class="text-sm font-medium ${restanteClass}">Restante: R$ ${restante.toFixed(2).replace('.', ',')}</div>
                             </td>
                             <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">${contrato.status}</span></td>
-	                            <td class="p-4 flex items-center gap-3">
-	                                <!-- Novo Botão de Dossiê -->
-	                                <button onclick="window.app.openDossieModal('${contrato.id}')" class="text-blue-500 hover:text-blue-700" title="Ver Dossiê do Cliente">
-	                                    <i data-lucide="eye" class="w-5 h-5"></i>
-	                                </button>
-	                                <button onclick="window.app.openAddPaymentModal('${contrato.id}')" class="text-green-500 hover:text-green-700" title="Adicionar Pagamento">
+                            <td class="p-4 flex items-center gap-3">
+                                <button onclick="window.app.openDossieModal('${contrato.id}')" class="text-blue-500 hover:text-blue-700" title="Ver Dossiê">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                                <button onclick="window.app.openAddPaymentModal('${contrato.id}')" class="text-green-500 hover:text-green-700" title="Adicionar Pagamento">
                                     <i data-lucide="plus-circle" class="w-5 h-5"></i>
                                 </button>
                                 <button onclick="window.app.abrirGerador('${contrato.id}')" class="text-indigo-500 hover:text-indigo-700" title="Gerar Texto do Contrato">
                                     <i data-lucide="file-signature" class="w-5 h-5"></i>
                                 </button>
-                                <!-- Novo Botão de Edição -->
                                 <button onclick="window.app.openEditContratoModal('${contrato.id}')" class="text-gray-500 hover:text-gray-700" title="Editar Contrato (Link/Status)">
                                     <i data-lucide="edit-2" class="w-5 h-5"></i>
                                 </button>
@@ -1846,9 +1916,9 @@
                                 <button onclick="window.app.deleteItem('contratos', '${contrato.id}')" class="text-red-500 hover:text-red-700" title="Excluir Contrato"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             </td>
                         </tr>`;
+                        // ######################################################
                     }).join('');
             }
-            // ######################################################
 
             function renderFotografos() {
                 const lista = document.getElementById('lista-fotografos');
@@ -2049,7 +2119,8 @@
                     return { 
                         title, status: 'entregue', text: `Entregue em ${dataEntrega}`, 
                         deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-green-100', 
-                        textColor: 'text-green-800', diffDays: 99998
+                        textColor: 'text-green-800', diffDays: 99998,
+                        data: dataEntrega // Adicionado
                     };
                 }
 
@@ -2057,20 +2128,23 @@
                     return { 
                         title, status: 'atrasado', text: `${Math.abs(diffDays)} dia(s) atrasado`, 
                         deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-red-100', 
-                        textColor: 'text-red-800', diffDays: diffDays
+                        textColor: 'text-red-800', diffDays: diffDays,
+                        data: null
                     };
                 }
                 if (diffDays === 0) {
                     return { 
                         title, status: 'hoje', text: 'Vence Hoje', 
                         deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-yellow-100', 
-                        textColor: 'text-yellow-800', diffDays: 0
+                        textColor: 'text-yellow-800', diffDays: 0,
+                        data: null
                     };
                 }
                 return { 
                     title, status: 'pendente', text: `Vence em ${diffDays} dia(s)`, 
                     deadline: `Prazo: ${prazoFormatado}`, bgColor: 'bg-blue-100', 
-                    textColor: 'text-blue-800', diffDays: diffDays
+                    textColor: 'text-blue-800', diffDays: diffDays,
+                    data: null
                 };
             }
 
@@ -2687,7 +2761,6 @@
             document.getElementById('printButton').addEventListener('click', () => {
                 window.print();
             });
-            // ######################################################
             
 
             function populateSelectWithOptions(selectId, options) {
@@ -2761,9 +2834,6 @@
                     document.getElementById('payment-amount').focus();
                 },
 
-                // ######################################################
-                // ALTERAÇÃO AQUI: Nova função para Modal de Edição
-                // ######################################################
                 openEditContratoModal: (contratoId) => {
                     const contrato = dbState.contratos.find(c => c.id === contratoId);
                     if (!contrato) {
@@ -2779,86 +2849,120 @@
                     editContractModal.classList.remove('hidden');
                     editContractModal.classList.add('flex');
                 },
-	                // ######################################################
-	
-	                openDossieModal: (contratoId) => {
-	                    const contrato = dbState.contratos.find(c => c.id === contratoId);
-	                    if (!contrato) {
-	                        alert("Erro: Contrato não encontrado.");
-	                        return;
-	                    }
-	                    
-	                    const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || {};
-	                    const evento = dbState.eventos.find(e => e.id === contrato.eventoId) || {};
-	                    const pagamentos = dbState.financeiro.filter(p => p.contratoId === contratoId);
-	                    
-	                    // 1. Preencher Dados do Cliente
-	                    document.getElementById('dossie-cliente-nome').textContent = cliente.nome || 'N/A';
-	                    document.getElementById('dossie-cliente-telefone').textContent = cliente.telefone || 'N/A';
-	                    document.getElementById('dossie-cliente-email').textContent = cliente.email || 'N/A';
-	                    document.getElementById('dossie-cliente-documento').textContent = cliente.documento || 'N/A';
-	                    document.getElementById('dossie-cliente-endereco').textContent = cliente.endereco || 'N/A';
-	
-	                    // 2. Preencher Dados do Evento
-	                    document.getElementById('dossie-evento-nome').textContent = evento.nome || 'N/A';
-	                    document.getElementById('dossie-evento-tipo').textContent = evento.tipo || 'N/A';
-	                    document.getElementById('dossie-evento-data').textContent = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
-	                    document.getElementById('dossie-evento-local').textContent = evento.local || 'N/A';
-	                    document.getElementById('dossie-evento-descricao').textContent = evento.descricao || 'N/A';
-	
-	                    // 3. Preencher Dados do Contrato
-	                    const valorTotal = parseFloat(contrato.valorTotal || 0);
-	                    const totalPago = pagamentos.reduce((acc, p) => acc + (parseFloat(p.valor) || 0), 0);
-	                    const restante = valorTotal - totalPago;
-	                    
-	                    const valorFormatado = (valor) => `R$ ${valor.toFixed(2).replace('.', ',')}`;
-	                    
-	                    document.getElementById('dossie-contrato-valor').innerHTML = `
-	                        <span class="font-bold text-gray-800">${valorFormatado(valorTotal)}</span> 
-	                        <span class="text-green-600 ml-2">(Pago: ${valorFormatado(totalPago)})</span>
-	                        <span class="${restante > 0 ? 'text-red-600' : 'text-green-600'} ml-2">(Restante: ${valorFormatado(restante)})</span>
-	                    `;
-	                    document.getElementById('dossie-contrato-data').textContent = contrato.dataContrato ? new Date(contrato.dataContrato + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
-	                    document.getElementById('dossie-contrato-status').textContent = contrato.status || 'N/A';
-	                    
-	                    const linkEl = document.getElementById('dossie-contrato-link');
-	                    if (contrato.link) {
-	                        linkEl.innerHTML = `<a href="${contrato.link}" target="_blank" class="text-blue-500 hover:underline">${contrato.link}</a>`;
-	                    } else {
-	                        linkEl.textContent = 'N/A';
-	                    }
-	                    document.getElementById('dossie-contrato-forma-pagamento').textContent = contrato.formaPagamento || 'N/A';
-	
-	                    // 4. Preencher Pagamentos
-	                    const pagamentosLista = document.getElementById('dossie-pagamentos-lista');
-	                    const pagamentosVazio = document.getElementById('dossie-pagamentos-vazio');
-	                    
-	                    if (pagamentos.length > 0) {
-	                        pagamentosVazio.classList.add('hidden');
-	                        pagamentosLista.innerHTML = pagamentos.map(p => {
-	                            const data = p.data ? new Date(p.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'Sem data';
-	                            return `
-	                                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
-	                                    <div class="text-sm">
-	                                        <span class="font-medium text-gray-700">${data}</span> - 
-	                                        <span class="text-gray-500">${p.metodo}</span>
-	                                    </div>
-	                                    <span class="font-bold text-green-600">${valorFormatado(parseFloat(p.valor) || 0)}</span>
-	                                </div>
-	                            `;
-	                        }).join('');
-	                    } else {
-	                        pagamentosLista.innerHTML = '';
-	                        pagamentosVazio.classList.remove('hidden');
-	                    }
-	
-	                    // 5. Abrir Modal
-	                    document.getElementById('dossie-modal').classList.remove('hidden');
-	                    document.getElementById('dossie-modal').classList.add('flex');
-	                    lucide.createIcons(); // Renderizar ícones do lucide dentro do modal
-	                },
-	
-	                abrirNovoEventoDoCalendario: (data) => {
+
+                // ######################################################
+                // ALTERAÇÃO AQUI: Novas funções para o Dossiê
+                // ######################################################
+                openDossieModalFromEvento: (eventoId) => {
+                    const contrato = dbState.contratos.find(c => c.eventoId === eventoId);
+                    if (contrato) {
+                        window.app.openDossieModal(contrato.id);
+                    } else {
+                        alert('Nenhum contrato encontrado para este evento. Crie um contrato na seção "Contratos".');
+                    }
+                },
+
+                openDossieModal: (contratoId) => {
+                    const contrato = dbState.contratos.find(c => c.id === contratoId);
+                    if (!contrato) {
+                        console.error("Contrato não encontrado:", contratoId);
+                        return;
+                    }
+
+                    const cliente = dbState.clientes.find(c => c.id === contrato.clienteId) || {};
+                    const evento = dbState.eventos.find(e => e.id === contrato.eventoId) || {};
+                    const pagamentos = dbState.financeiro.filter(p => p.contratoId === contratoId);
+                    const custos = dbState.custos.filter(c => c.eventoId === contrato.eventoId);
+
+                    // --- Cálculos ---
+                    const valorTotal = parseFloat(contrato.valorTotal || 0);
+                    const totalPago = pagamentos.reduce((acc, p) => acc + (parseFloat(p.valor) || 0), 0);
+                    const restante = valorTotal - totalPago;
+                    const totalCusto = custos.reduce((acc, c) => acc + (parseFloat(c.valor) || 0), 0);
+                    const lucroLiquido = valorTotal - totalCusto;
+                    const dataEventoFormatada = evento.data ? new Date(evento.data + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
+
+                    // --- Preenche Informações ---
+                    document.getElementById('dossie-evento-nome').innerText = evento.nome || 'N/A';
+                    document.getElementById('dossie-cliente-nome').innerText = cliente.nome || 'N/A';
+                    document.getElementById('dossie-cliente-contato').innerText = `${cliente.telefone || 'Sem telefone'} | ${cliente.email || 'Sem email'}`;
+                    document.getElementById('dossie-evento-data').innerText = dataEventoFormatada;
+                    document.getElementById('dossie-evento-local').innerText = evento.local || 'N/A';
+                    
+                    const linkEl = document.getElementById('dossie-contrato-link');
+                    if (contrato.link) {
+                        linkEl.innerHTML = `<a href="${contrato.link}" target="_blank" class="hover:underline">${contrato.link}</a>`;
+                    } else {
+                        linkEl.innerText = 'Nenhum link salvo';
+                    }
+
+                    // --- Preenche Financeiro ---
+                    document.getElementById('dossie-valor-contrato').innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('dossie-total-pago').innerText = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('dossie-valor-restante').innerText = `R$ ${restante.toFixed(2).replace('.', ',')}`;
+                    
+                    const pagamentosListaEl = document.getElementById('dossie-pagamentos-lista');
+                    if (pagamentos.length > 0) {
+                        pagamentosListaEl.innerHTML = pagamentos.map(p => {
+                            const dataPag = new Date(p.data + 'T00:00:00').toLocaleDateString('pt-BR');
+                            return `<div class="flex justify-between items-center text-gray-700">
+                                        <span>${dataPag} (${p.metodo})</span>
+                                        <span class="font-medium text-green-600">+ R$ ${parseFloat(p.valor).toFixed(2).replace('.', ',')}</span>
+                                    </div>`;
+                        }).join('');
+                    } else {
+                        pagamentosListaEl.innerHTML = `<p class="text-gray-500">Nenhum pagamento registrado.</p>`;
+                    }
+
+                    // --- Preenche Lucratividade ---
+                    document.getElementById('dossie-lucro-valor').innerText = `+ R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('dossie-lucro-custos').innerText = `- R$ ${totalCusto.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('dossie-lucro-liquido').innerText = `R$ ${lucroLiquido.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('dossie-lucro-liquido').className = `font-bold text-3xl ${lucroLiquido < 0 ? 'text-red-600' : 'text-gray-900'}`;
+                    
+                    const custosListaEl = document.getElementById('dossie-custos-lista');
+                    if (custos.length > 0) {
+                        custosListaEl.innerHTML = custos.map(c => {
+                            const fotografo = dbState.fotografos.find(f => f.id === c.fotografoId);
+                            const desc = fotografo ? `${c.descricao} (${fotografo.nome})` : c.descricao;
+                            return `<div class="flex justify-between items-center text-gray-700">
+                                        <span>${desc}</span>
+                                        <span class="font-medium text-red-600">- R$ ${parseFloat(c.valor).toFixed(2).replace('.', ',')}</span>
+                                    </div>`;
+                        }).join('');
+                    } else {
+                        custosListaEl.innerHTML = `<p class="text-gray-500">Nenhum custo registrado.</p>`;
+                    }
+
+                    // --- Preenche Entregas ---
+                    const entregasListaEl = document.getElementById('dossie-entregas-lista');
+                    const tiposEntrega = ['previa', 'midia', 'album'];
+                    entregasListaEl.innerHTML = tiposEntrega.map(tipo => {
+                        const info = getEntregaInfo(evento, tipo);
+                        const statusColor = info.status === 'entregue' ? 'text-green-600' : (info.status === 'atrasado' || info.status === 'hoje' ? 'text-red-600' : 'text-gray-700');
+                        const statusText = info.status === 'entregue' ? `Entregue em ${info.data}` : info.text;
+
+                        return `<div class="p-2 border-b">
+                                    <span class="font-semibold text-gray-900">${info.title}</span>
+                                    <p class="text-sm ${statusColor}">${statusText}</p>
+                                    <p class="text-xs text-gray-500">${info.deadline}</p>
+                                </div>`;
+                    }).join('');
+
+
+                    // --- Exibe o Modal ---
+                    document.getElementById('dossie-modal').classList.remove('hidden');
+                    document.getElementById('dossie-modal').classList.add('flex');
+                },
+
+                closeDossieModal: () => {
+                    document.getElementById('dossie-modal').classList.add('hidden');
+                    document.getElementById('dossie-modal').classList.remove('flex');
+                    document.getElementById('dossie-content').scrollTop = 0; // Reseta o scroll
+                },
+                // ######################################################
+
+                abrirNovoEventoDoCalendario: (data) => {
                     const eventoNavLink = document.querySelector('a[onclick*="showSection(\'eventos\')"]');
                     if(eventoNavLink) eventoNavLink.click();
                     
